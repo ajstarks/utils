@@ -48,7 +48,7 @@ func main() {
 	fields := getf(flag.Args())
 
 	// loop over the input, making output
-	for n :=0; ; n++ {
+	for n := 0; ; n++ {
 		data, err = r.Read()
 		if err == io.EOF {
 			break
