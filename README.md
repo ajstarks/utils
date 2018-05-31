@@ -1,13 +1,14 @@
-# utils
+# Useful commands
 
-## Useful commands
-
-* dpi - compute the dots per inch and aspect ratio
-* randgen - generate random numbers
-* fstat - show file status
 * csvread - parse and display CSV files
-* jsonfeed - parse and list JSON feeds
+* ctime - show execution time of a command
+* dict - lookup words via dictionary servers
+* dpi - compute  dots per inch and aspect ratio
+* fstat - show file status
 * ims - show image size (width and height)
-* dict - talk to dictionary servers
+* jsonfeed - parse and list JSON feeds
+* randgen - generate random numbers
+* ws - web server
+
 
 
