@@ -25,19 +25,18 @@ import (
 )
 
 func work(tag string, s []string) {
-	
 	b := time.Now()
 	err := exec.Command(s[0], s[1:]...).Run()
 	e := time.Now()
+	d := e.Sub(b).Seconds()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
-	
 	if tag == "" {
 		tag = s[0]
 	}
-	fmt.Printf("%v\t%.5f\n", tag, e.Sub(b).Seconds())
+	fmt.Printf("%v\t%.5f\n", tag, d)
 }
 
 func main() {
