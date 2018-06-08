@@ -25,22 +25,24 @@ import (
 )
 
 func work(tag string, s []string) {
-	b := time.Now()
-	err := exec.Command(s[0], s[1:]...).Run()
-	e := time.Now()
-	d := e.Sub(b).Seconds()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+	if len(s) < 1 {
 		return
 	}
 	if tag == "" {
 		tag = s[0]
 	}
-	fmt.Printf("%v\t%.5f\n", tag, d)
+	b := time.Now()
+	err := exec.Command(s[0], s[1:]...).Run()
+	e := time.Now()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	fmt.Printf("%v\t%.5f\n", tag, e.Sub(b).Seconds())
 }
 
 func main() {
 	var tag = flag.String("t", "", "tag for the command")
 	flag.Parse()
-	work(*tag, flag.Args())
+	work(*tag, flag.Args())	
 }
