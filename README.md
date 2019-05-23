@@ -8,6 +8,7 @@
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * randgen - generate random numbers
+* utab - make PDF unicode tables
 * ws - web server
 
 
