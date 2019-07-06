@@ -1,4 +1,4 @@
-// feed: process "Friday Feed" files, output as plain text, deck, or JSON
+// feed: process "Friday Feed" files, output as plain text, deck, html, RTF, or JSON
 package main
 
 import (

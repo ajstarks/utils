@@ -4,7 +4,7 @@
 * ctime - show the execution time of a command
 * dict - lookup words via dictionary servers
 * dpi - compute dots per inch and aspect ratio
-* feed - generate Friday Feed markup
+* feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fstat - show file status
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
