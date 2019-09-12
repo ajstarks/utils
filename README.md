@@ -8,8 +8,10 @@
 * fstat - show file status
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
+* mkpoly - generate decksh polygons from x,y pairs
 * randgen - generate random numbers
 * utab - make PDF unicode tables using TrueType fonts
+* vmap - map data ranges
 * ws - web server
 
 
