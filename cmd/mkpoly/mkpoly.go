@@ -37,16 +37,15 @@ func main() {
 	flag.Parse()
 
 	for _, f := range flag.Args() {
-		err := process(p, f)
-		if err != nil {
+		if err := process(p, f); err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
 	}
 }
 
-// readata reads name, value pairs, and returns the min and max values
-func readata(r io.Reader) ([]float64, []float64) {
+// readata reads x, y pairs, checking for errors
+func readata(r io.Reader) ([]float64, []float64, error) {
 	var x, y []float64
 	var xp, yp float64
 	var err error
@@ -65,7 +64,7 @@ func readata(r io.Reader) ([]float64, []float64) {
 		x = append(x, xp)
 		y = append(y, yp)
 	}
-	return x, y
+	return x, y, scanner.Err()
 }
 
 // process data in the filename
@@ -76,10 +75,14 @@ func process(p params, filename string) error {
 	}
 
 	fmt.Println("#", p.minx, p.maxx, p.miny, p.maxy, p.left, p.right, p.bottom, p.top)
+
+	x, y, err := readata(r)
+	if err != nil {
+		return err
+	}
+
 	pminx := largest
 	pmaxx := smallest
-	x, y := readata(r)
-
 	fmt.Printf("polygon \"")
 	for i := 0; i < len(x); i++ {
 		px := vmap(x[i], p.minx, p.maxx, p.left, p.right)
