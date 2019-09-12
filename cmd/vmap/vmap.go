@@ -1,22 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
-	"strconv"
 )
 
 func main() {
-	if len(os.Args) < 6 {
-		fmt.Fprintf(os.Stderr, "vmap value low1 high1 low2 high2\n")
-		os.Exit(1)
-	}
 	var value, low1, high1, low2, high2 float64
-	value, _ = strconv.ParseFloat(os.Args[1], 64)
-	low1, _ = strconv.ParseFloat(os.Args[2], 64)
-	high1, _ = strconv.ParseFloat(os.Args[3], 64)
-	low2, _ = strconv.ParseFloat(os.Args[4], 64)
-	high2, _ = strconv.ParseFloat(os.Args[5], 64)
+
+	flag.Float64Var(&value, "value", 1, "value")
+	flag.Float64Var(&low1, "low1", 0, "low1")
+	flag.Float64Var(&high1, "high1", 10, "high1")
+
+	flag.Float64Var(&low2, "low2", 0, "low12")
+	flag.Float64Var(&high2, "high2", 100, "high2")
+	flag.Parse()
+
 	fmt.Printf("%g (%g, %g) (%g, %g) = %g\n", value, low1, high1, low2, high2, vmap(value, low1, high1, low2, high2))
 
 }
