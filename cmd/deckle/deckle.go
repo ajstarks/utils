@@ -1,3 +1,4 @@
+// deckle -- generate deck markup for deckled edges (lines and filled)
 package main
 
 import (
@@ -9,7 +10,7 @@ import (
 	"github.com/ajstarks/deck/generate"
 )
 
-// hdeckle makes a horizontal deckled edge running from (x1, y1) to (x2, y2)
+// hfill makes a (width long) horizontal deckled edge starting at (x,y)
 func hfill(deck *generate.Deck, x, y, width, height float64, color string, n int) {
 	xp := make([]float64, n)
 	yp := make([]float64, n)
@@ -34,6 +35,7 @@ func hfill(deck *generate.Deck, x, y, width, height float64, color string, n int
 	deck.Polygon(xp, yp, color)
 }
 
+// vfill makes a (height high) vertical deckled edge
 func vfill(deck *generate.Deck, x, y, width, height float64, color string, n int) {
 	xp := make([]float64, n)
 	yp := make([]float64, n)
@@ -58,6 +60,7 @@ func vfill(deck *generate.Deck, x, y, width, height float64, color string, n int
 	deck.Polygon(xp, yp, color)
 }
 
+// hline makes a (width long) horizontal deckled edge
 func hline(deck *generate.Deck, x, y, width, height, linewidth float64, color string, n int) {
 	xincr := width / float64(n)
 	hi := xincr / 2
@@ -69,6 +72,7 @@ func hline(deck *generate.Deck, x, y, width, height, linewidth float64, color st
 	}
 }
 
+// vline makes a (height high) vertical deckled edge
 func vline(deck *generate.Deck, x, y, width, height, linewidth float64, color string, n int) {
 	yincr := height / float64(n)
 	hi := yincr / 2

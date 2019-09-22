@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/ajstarks/deck/generate"
 )
@@ -35,19 +36,21 @@ var (
 )
 
 const (
-	ecolor    = "black"            // entry color
-	tcolor    = "rgb(127,0,0)"     // title color
-	qcolor    = "rgb(127,127,127)" // quote color
-	htmltop   = `<html><head><style type="text/css">body {font-size:14pt;font-family: Calibri, Arial, sans-serif; margin-left:10%; margin-right:10%;} h1 {font-size:200%;} h2 {margin-top:20pt;font-size: 120%;} p {margin-top: 4pt; margin-bottom:3pt;}</style></head><body>`
-	htmldate  = "<h1>%s</h1><p>%s</p>"
-	htmltitle = "<h2>%s</h2>\n"
-	htmlquote = "<p>%s</p>\n"
-	htmlend   = "</body>\n</html>"
-	htmllink  = "<a href=\"%s\">%s</a>\n"
-	rtfhead   = "{\\rtf1\\ansi\\ansicpg1252{\\fonttbl\\f0\\fnil\\fcharser0 Calibri;}{\\colortbl ;\\red0\\green0\\blue238;}"
-	tfmt      = "\\f0\\b\\fs28 %s\\\n\n"
-	qfmt      = "\\i\\b0 %s\\\n"
-	hfmt      = "\\i0{\\field{\\*\\fldinst HYPERLINK \"%s\"}{\\fldrslt {\\ul\\cf1%s}}}\\\n\\ulnone\n\\\n\\\n"
+	ecolor       = "black"            // entry color
+	tcolor       = "rgb(127,0,0)"     // title color
+	qcolor       = "rgb(127,127,127)" // quote color
+	htmltop      = `<html><head><style type="text/css">body {font-size:14pt;font-family: Calibri, Arial, sans-serif; margin-left:10%; margin-right:10%;} h1 {font-size:200%;} h2 {margin-top:20pt;font-size: 120%;} p {margin-top: 4pt; margin-bottom:3pt;}</style></head><body>`
+	htmldate     = `<h1>%s</h1><p><a href="feed-%s.html">Last Week</a>&nbsp;&nbsp;%s&nbsp;&nbsp;<a href="feed-%s.html">Next Week</a></p>`
+	htmltitle    = "<h2>%s</h2>\n"
+	htmlquote    = "<p>%s</p>\n"
+	htmlend      = "</body>\n</html>"
+	htmllink     = "<a href=\"%s\">%s</a>\n"
+	datefmt      = "2006-01-02"
+	dateparsefmt = "January 2, 2006"
+	rtfhead      = "{\\rtf1\\ansi\\ansicpg1252{\\fonttbl\\f0\\fnil\\fcharser0 Calibri;}{\\colortbl ;\\red0\\green0\\blue238;}"
+	tfmt         = "\\f0\\b\\fs28 %s\\\n\n"
+	qfmt         = "\\i\\b0 %s\\\n"
+	hfmt         = "\\i0{\\field{\\*\\fldinst HYPERLINK \"%s\"}{\\fldrslt {\\ul\\cf1%s}}}\\\n\\ulnone\n\\\n\\\n"
 )
 
 // map utf-8 to windows-1252 notation
@@ -110,8 +113,22 @@ func genrtf(w io.Writer, f Feed) {
 
 // genhtml outputs the feed markup as HTML
 func genhtml(w io.Writer, f Feed) {
+	// compute the next and previous week, based on the date read.
+	t, err := time.Parse(dateparsefmt, f.Date)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	day, err := time.ParseDuration("24h")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		return
+	}
+	week := day * 7
+	next := t.Add(week)
+	prev := t.Add(-week)
 	fmt.Fprintln(w, htmltop)
-	fmt.Fprintf(w, htmldate, f.Title, f.Date)
+	fmt.Fprintf(w, htmldate, f.Title, prev.Format(datefmt), f.Date, next.Format(datefmt))
 	for _, e := range f.Entries {
 		fmt.Fprintf(w, htmltitle, e.Title)
 		fmt.Fprintf(w, htmlquote, e.Quote)
