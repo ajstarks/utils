@@ -1,5 +1,6 @@
 # Useful commands
 
+* between - print the number of hours between two dates
 * csvread - parse and display CSV files
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
@@ -11,6 +12,7 @@
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * mkpoly - generate decksh polygons from x,y pairs
+* polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
 * utab - make PDF unicode tables using TrueType fonts
 * vmap - map data ranges
