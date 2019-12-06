@@ -12,7 +12,7 @@ import (
 
 const (
 	gitime  = "Mon Jan 2 15:04:05 2006 -0700"
-	isotime = "2006-01-02 15:04:05 -0700"
+	isotime = "2006-01-02T15:04:05-07:00"
 )
 
 type config struct {
@@ -68,7 +68,7 @@ func process(w io.Writer, r io.Reader, c config) error {
 
 func main() {
 	title := flag.String("title", "commit history", "title")
-	btime := flag.String("begin", "1970-01-01 00:00:00 -0000", "begin time")
+	btime := flag.String("begin", "1970-01-01T00:00:00+00:00", "begin time")
 	etime := flag.String("end", time.Now().Format(isotime), "end time")
 	ypoint := flag.Float64("y", 50, "y point")
 	radius := flag.Float64("r", 2, "radius")
