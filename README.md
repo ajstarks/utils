@@ -9,6 +9,7 @@
 * dpi - compute dots per inch and aspect ratio
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fstat - show file status
+* gitdate - visualize git commits over time
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * mkpoly - generate decksh polygons from x,y pairs
