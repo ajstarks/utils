@@ -10,10 +10,6 @@ import (
 	"github.com/ajstarks/deck/generate"
 )
 
-const (
-	pi2 = math.Pi * 2
-)
-
 var hrangles = [12]float64{
 	90, 60, 30, // 12, 1, 2
 	0, 330, 300, // 3, 4, 5
@@ -56,6 +52,12 @@ func clock(deck *generate.Deck, x, y, r float64) {
 
 	hlen := r * 0.05
 	mlen := hlen / 3
+
+	deck.Circle(x, y, (r*2)+msize, "silver")
+	deck.Circle(x, y, r*2, "white")
+
+	// Around the circle, make hour and second ticks
+	// for every 5, mark the hour, else mark the minute
 	for t := 0.0; t < 360; t += 6 {
 		if n%5 == 0 { // hours
 			r2 = r - hsize
@@ -71,26 +73,56 @@ func clock(deck *generate.Deck, x, y, r float64) {
 	}
 }
 
+// oppangle computes the opposite angle
+func oppangle(a float64) float64 {
+	if a >= 0 && a <= 180 {
+		return a + 180
+	}
+	return a - 180
+}
+
 // drawtime draws a clock face with  hour, minute and second hands
 func drawtime(deck *generate.Deck, x, y, r float64, h, m, s int) {
+	if (m > 59 || m < 0) || (s > 59 || s < 0) {
+		return
+	}
 	clock(deck, x, y, r)
 	linesize := r * 0.06666
-	a := hrangles[h%12]
+	extrar := r / 6 // length of the line past the centerline
+
+	// get angles for hour, minute, second
+	ha := hrangles[h%12]
+	ma := minangles[m]
+	sa := minangles[s]
 
 	if m > 30 { // if the minute is > 30, adjust the hour angle proportionally
-		a = a - (30.0 * float64(m) / 60.0)
+		ha = ha - (30.0 * float64(m) / 60.0)
 	}
-	hx, hy := polar(x, y, r*0.7, a)
+
+	// the hour, minute, and second hands are drawn in two parts.
+	// part 1 is the line between the center point (x,y) and radius
+	// part 2 is the extra line past the center whose angle is opposite the part 1 line.
+
+	// hour line
+	hx, hy := polar(x, y, r*0.7, ha)
+	hx2, hy2 := polar(x, y, extrar, oppangle(ha))
 	deck.Line(x, y, hx, hy, linesize, "gray")
+	deck.Line(x, y, hx2, hy2, linesize, "gray")
 
-	mx, my := polar(x, y, r*0.95, minangles[m])
+	// minute line
+	mx, my := polar(x, y, r*0.95, ma)
+	mx2, my2 := polar(x, y, extrar, oppangle(ma))
 	deck.Line(x, y, mx, my, linesize, "black")
+	deck.Line(x, y, mx2, my2, linesize, "black")
 
+	// second line -- includes dot at the end
 	dotsize := r * 0.2
 	slinesize := linesize * 0.375
-	sx, sy := polar(x, y, (r*0.7)-dotsize/2, minangles[s])
-	cx, cy := polar(x, y, r*0.7, minangles[s])
+	sx, sy := polar(x, y, (r*0.7)-dotsize/2, sa)
+	sx2, sy2 := polar(x, y, extrar, oppangle(sa))
+	cx, cy := polar(x, y, r*0.7, sa)
 	deck.Line(x, y, sx, sy, slinesize, "red")
+	deck.Line(x, y, sx2, sy2, slinesize, "red")
 	deck.Circle(cx, cy, dotsize, "red")
 }
 
@@ -101,6 +133,30 @@ func main() {
 	deck.StartSlide()
 	deck.TextMid(50, 2, now.Format(time.Kitchen), "sans", 4, "")
 	drawtime(deck, 50, 50, 40, now.Hour(), now.Minute(), now.Second())
+	deck.EndSlide()
+
+	deck.StartSlide()
+	deck.TextMid(20, 30, "Now-3H", "sans", 2, "")
+	deck.TextMid(50, 30, "Now", "sans", 2, "")
+	deck.TextMid(80, 30, "Now+5H", "sans", 2, "")
+
+	drawtime(deck, 20, 50, 10, now.Hour()-3, now.Minute(), now.Second())
+	drawtime(deck, 50, 50, 10, now.Hour(), now.Minute(), now.Second())
+	drawtime(deck, 80, 50, 10, now.Hour()+5, now.Minute(), now.Second())
+	deck.EndSlide()
+
+	deck.StartSlide()
+	//hr := 12
+	m := 0
+	s := 5
+	for y := 80.0; y >= 20; y -= 20 {
+		for x := 20.0; x <= 80; x += 30 {
+			drawtime(deck, x, y, 8, 12, m, s%60)
+			//hr++
+			m += 5
+			s += 5
+		}
+	}
 	deck.EndSlide()
 	deck.EndDeck()
 }
