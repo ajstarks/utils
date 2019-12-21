@@ -88,7 +88,7 @@ func drawtime(deck *generate.Deck, x, y, r float64, h, m, s int) {
 	}
 	clock(deck, x, y, r)
 	linesize := r * 0.06666
-	extrar := r / 6 // length of the line past the centerline
+	extrar := r / 4 // length of the line past the centerline
 
 	// get angles for hour, minute, second
 	ha := hrangles[h%12]
@@ -145,14 +145,12 @@ func main() {
 	drawtime(deck, 80, 50, 10, now.Hour()+5, now.Minute(), now.Second())
 	deck.EndSlide()
 
-	deck.StartSlide()
-	//hr := 12
+	deck.StartSlide("black", "white")
 	m := 0
 	s := 5
 	for y := 80.0; y >= 20; y -= 20 {
 		for x := 20.0; x <= 80; x += 30 {
 			drawtime(deck, x, y, 8, 12, m, s%60)
-			//hr++
 			m += 5
 			s += 5
 		}
