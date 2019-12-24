@@ -87,7 +87,7 @@ func drawtime(deck *generate.Deck, x, y, r float64, h, m, s int) {
 		return
 	}
 	clock(deck, x, y, r)
-	linesize := r * 0.06666
+	linesize := r * 0.09
 	extrar := r / 4 // length of the line past the centerline
 
 	// get angles for hour, minute, second
@@ -117,7 +117,7 @@ func drawtime(deck *generate.Deck, x, y, r float64, h, m, s int) {
 
 	// second line -- includes dot at the end
 	dotsize := r * 0.2
-	slinesize := linesize * 0.375
+	slinesize := linesize * 0.275
 	sx, sy := polar(x, y, (r*0.7)-dotsize/2, sa)
 	sx2, sy2 := polar(x, y, extrar, oppangle(sa))
 	cx, cy := polar(x, y, r*0.7, sa)
