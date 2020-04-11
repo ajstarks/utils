@@ -1,3 +1,4 @@
+// randgen makes random numbers
 package main
 
 import (
@@ -16,11 +17,17 @@ func main() {
 	min := flag.Float64("min", 0, "minimum value")
 	max := flag.Float64("max", 1e6, "minimum value")
 	ndec := flag.Int("dec", 3, "number of decimals")
+	xint := flag.Float64("xint", 0, "x value interval")
 	flag.Parse()
+	xval := 0.0
 	rand.Seed(int64(time.Now().Nanosecond()) % 1e9)
-	f := fmt.Sprintf("%%.%df\n", *ndec)
+	f := fmt.Sprintf("%%.%df", *ndec)
 	for i := 0; i < *nrand; i++ {
-		fmt.Printf(f, vmap(rand.Float64(), 0, 1, *min, *max))
+		if *xint > 0 {
+			fmt.Printf(f+"\t", xval)
+			xval += *xint
+		}
+		fmt.Printf(f+"\n", vmap(rand.Float64(), 0, 1, *min, *max))
 	}
 
 }
