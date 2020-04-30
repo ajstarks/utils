@@ -170,10 +170,11 @@ func main() {
 	h := 20.0
 	casecolor := "rgb(100,100,100)"
 	deathcolor := "maroon"
-	cyr := yrange{0, 3e6, 6e5}
-	dyr := yrange{0, 2e5, 5e4}
+	cyr := yrange{0, 3.2e6, 5e5}
+	dyr := yrange{0, 2.2e5, 5e4}
 
-	if err := makedata(); err != nil {
+	err := makedata()
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
@@ -187,9 +188,9 @@ func main() {
 	deck.StartDeck()
 	deck.StartSlide()
 	labels(deck, casesChart, deathsChart, ty, deathcolor)
-	casesChart.Top = ty - 5
+	casesChart.Top = 85
 	c19curve(deck, casesChart, "Cases", casecolor, cyr, h)
-	deathsChart.Top = casesChart.Top - h - 10
+	deathsChart.Top = 55
 	c19curve(deck, deathsChart, "Deaths", deathcolor, dyr, h)
 	casesChart.Top = 25
 	summarychart(deck, casesChart, deathsChart, casecolor, deathcolor, cyr, h)
