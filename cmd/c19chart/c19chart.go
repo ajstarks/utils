@@ -4,6 +4,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -165,13 +166,31 @@ func labels(deck *generate.Deck, cc, dc dchart2.ChartBox, y float64, color strin
 	deck.TextEnd(cc.Right, y, fatalfmt+ftoa(frate, 2)+"%", "sans", 2, color)
 }
 
+func yrangeparse(s string) yrange {
+	var min, max, step float64
+	var yr yrange
+	n, err := fmt.Sscanf(s, "%v,%v,%v", &min, &max, &step)
+	if err != nil || n != 3 {
+		return yr
+	}
+	yr.min = min
+	yr.max = max
+	yr.step = step
+	return yr
+}
+
 func main() {
+	var cyrs, dyrs string
+	flag.StringVar(&cyrs, "cyr", "0,3.2e6,5e5", "case y range")
+	flag.StringVar(&dyrs, "dyr", "0,2.2e5,5e4", "death y range")
+	flag.Parse()
+
 	ty := 92.0
 	h := 20.0
 	casecolor := "rgb(100,100,100)"
 	deathcolor := "maroon"
-	cyr := yrange{0, 3.2e6, 5e5}
-	dyr := yrange{0, 2.2e5, 5e4}
+	cyr := yrangeparse(cyrs)
+	dyr := yrangeparse(dyrs)
 
 	err := makedata()
 	if err != nil {
