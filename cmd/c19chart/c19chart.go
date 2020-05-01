@@ -37,6 +37,11 @@ type C19 struct {
 
 // makedata reads from the API, makes the CSV
 func makedata() error {
+	t := fileage()
+	if t < (8 * time.Hour) {
+		fmt.Fprintf(os.Stderr, "using the data file that is %v old\n", t)
+		return nil
+	}
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Get(c19URL)
 	if err != nil {
@@ -177,6 +182,15 @@ func yrangeparse(s string) yrange {
 	yr.max = max
 	yr.step = step
 	return yr
+}
+
+func fileage() time.Duration {
+	now := time.Now()
+	f, err := os.Stat(c19Filename)
+	if err != nil {
+		return 8 * time.Hour
+	}
+	return now.Sub(f.ModTime())
 }
 
 func main() {
