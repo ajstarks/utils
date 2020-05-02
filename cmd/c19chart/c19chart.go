@@ -37,8 +37,7 @@ type C19 struct {
 
 // makedata reads from the API, makes the CSV
 func makedata() error {
-	t := fileage()
-	if t < (8 * time.Hour) {
+	if t := fileage(); t < (8 * time.Hour) {
 		fmt.Fprintf(os.Stderr, "using the data file that is %v old\n", t)
 		return nil
 	}
