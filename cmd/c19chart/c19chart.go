@@ -185,12 +185,11 @@ func yrangeparse(s string) yrange {
 }
 
 func fileage() time.Duration {
-	now := time.Now()
 	f, err := os.Stat(c19Filename)
 	if err != nil {
 		return 8 * time.Hour
 	}
-	return now.Sub(f.ModTime())
+	return time.Since(f.ModTime())
 }
 
 func main() {
