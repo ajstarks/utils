@@ -119,8 +119,8 @@ func thousands(n float64, sep rune) string {
 
 // c19curve shows the covid-19 curve
 func c19curve(deck *generate.Deck, chart dchart2.ChartBox, label, color string, yr yrange, h float64) {
-	left := chart.Left + 5
-	ly := chart.Top - 10
+	left := chart.Left + 2
+	ly := chart.Top - 5
 	chart.Bottom = chart.Top - h
 	dl := len(chart.Data)
 	v := chart.Data[dl-1].Value
@@ -135,8 +135,8 @@ func c19curve(deck *generate.Deck, chart dchart2.ChartBox, label, color string, 
 	chart.XLabel(deck, 5)
 	chart.DataFormat = "%0.f"
 	chart.YAxis(deck, yr.min, yr.max, yr.step, false)
-	chart.Line(deck, 0.2)
-	chart.Opacity = 40
+	chart.Scatter(deck, 0.2)
+	chart.Opacity = 20
 	chart.Area(deck)
 }
 
@@ -147,7 +147,7 @@ func summarychart(deck *generate.Deck, cc, dc dchart2.ChartBox, casecolor, death
 	cc.XLabel(deck, 5)
 	cc.DataFormat = "%0.f"
 	cc.YAxis(deck, yr.min, yr.max, yr.step, false)
-	cc.Line(deck, 0.2)
+	//cc.Line(deck, 0.2)
 	cc.Frame(deck, 5)
 	cc.Opacity = 40
 	cc.Area(deck)
@@ -155,10 +155,10 @@ func summarychart(deck *generate.Deck, cc, dc dchart2.ChartBox, casecolor, death
 	dc.Maxvalue = cc.Maxvalue
 	dc.DataColor = deathcolor
 	dc.Bottom = cc.Bottom
-	dc.Line(deck, 0.2)
+	//dc.Line(deck, 0.2)
 	dc.Opacity = 40
 	dc.Area(deck)
-	deck.Text(cc.Right-50, 15, "Cases", "sans", 2, casecolor)
+	deck.Text(cc.Left+20, 15, "Cases", "sans", 2, casecolor)
 	deck.Text(cc.Right-10, 10, "Deaths", "sans", 2, deathcolor)
 }
 
