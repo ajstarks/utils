@@ -127,7 +127,7 @@ func c19curve(deck *generate.Deck, chart dchart2.ChartBox, label, color string, 
 	pv := chart.Data[dl-2].Value
 
 	pctchange := ((v - pv) / pv) * 100
-	deck.Text(left, ly+5, label, "sans", 2.5, chart.DataColor)
+	deck.Text(left, ly+5, label, "sans", 2.5, color)
 	deck.Text(left, ly, thousands(v, ','), "sans", 4, color)
 	deck.Text(left, ly-4, ftoa(pctchange, 3)+"% change", "sans", 2, chart.LabelColor)
 	chart.DataColor = color
@@ -189,8 +189,8 @@ func fileage() time.Duration {
 
 func main() {
 	var cyrs, dyrs string
-	flag.StringVar(&cyrs, "cyr", "0,4.0e6,5e5", "case y range")
-	flag.StringVar(&dyrs, "dyr", "0,3.0e5,5e4", "death y range")
+	flag.StringVar(&cyrs, "cyr", "0,5e6,10e5", "case y range")
+	flag.StringVar(&dyrs, "dyr", "0,3.0e5,7e4", "death y range")
 	flag.Parse()
 
 	ty := 92.0
