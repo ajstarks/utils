@@ -189,8 +189,8 @@ func fileage() time.Duration {
 
 func main() {
 	var cyrs, dyrs string
-	flag.StringVar(&cyrs, "cyr", "0,5e6,10e5", "case y range")
-	flag.StringVar(&dyrs, "dyr", "0,3.0e5,7e4", "death y range")
+	flag.StringVar(&cyrs, "cyr", "0,7e6,1e6", "case y range")
+	flag.StringVar(&dyrs, "dyr", "0,4e5,1e5", "death y range")
 	flag.Parse()
 
 	ty := 92.0
