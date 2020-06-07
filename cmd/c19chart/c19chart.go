@@ -18,7 +18,7 @@ import (
 const (
 	c19URL      = "https://coronavirus.projectpage.app/.json?period=0"
 	titlefmt    = "COVID-19 Global Status: "
-	fatalfmt    = "Fatality Rate: "
+	fatalfmt    = "Death/Case Ratio: "
 	c19Filename = "c19.csv"
 )
 
