@@ -17,6 +17,7 @@
 * mkpoly - generate decksh polygons from x,y pairs
 * polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
+* svgcolor - lookup SVG named colors
 * swiss - make a clock based on the iconic Swiss Railway clock
 * utab - make PDF unicode tables using TrueType fonts
 * vmap - map data ranges
