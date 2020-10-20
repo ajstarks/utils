@@ -119,17 +119,17 @@ func thousands(n float64, sep rune) string {
 
 // c19curve shows the covid-19 curve
 func c19curve(deck *generate.Deck, chart dchart2.ChartBox, label, color string, yr yrange, h float64) {
-	left := chart.Left + 2
-	ly := chart.Top - 5
+	left := chart.Left
+	ly := chart.Top
 	chart.Bottom = chart.Top - h
 	dl := len(chart.Data)
 	v := chart.Data[dl-1].Value
 	pv := chart.Data[dl-2].Value
 
 	pctchange := ((v - pv) / pv) * 100
-	deck.Text(left, ly+5, label, "sans", 2.5, color)
-	deck.Text(left, ly, thousands(v, ','), "sans", 4, color)
-	deck.Text(left, ly-4, ftoa(pctchange, 3)+"% change", "sans", 2, chart.LabelColor)
+	deck.Text(left, ly, label, "sans", 2.5, color)
+	deck.Text(left+10, ly, thousands(v, ','), "sans", 4, color)
+	deck.TextEnd(chart.Right, ly, ftoa(pctchange, 3)+"% change", "sans", 2, chart.LabelColor)
 	chart.DataColor = color
 	chart.Frame(deck, 5)
 	chart.XLabel(deck, 5)
