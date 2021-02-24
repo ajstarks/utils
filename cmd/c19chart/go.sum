@@ -1,0 +1,6 @@
+github.com/ajstarks/dchart2 v0.0.0-20200422132333-d422fc36b888 h1:MWGm3uzeqVvHjdyT15TrMYFpJXqet7swgDfJUlk8RHM=
+github.com/ajstarks/dchart2 v0.0.0-20200422132333-d422fc36b888/go.mod h1:VN7x3oiGjh6Xa7pbX1ptjlAQFqSYYyzHnjron9Qom7o=
+github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9 h1:7kQgkwGRoLzC9K0oyXdJo7nve/bynv/KwUsxbiTlzAM=
+github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9/go.mod h1:JynElWSGnm/4RlzPXRlREEwqTHAN3T56Bv2ITsFT3gY=
+github.com/ajstarks/deck/generate v0.0.0-20210223212949-8bd01c798494 h1:Z5Dn/2Ml6/8fP1PWxv4ijaK2PwHsX8A+gZiKJVP+XDs=
+github.com/ajstarks/deck/generate v0.0.0-20210223212949-8bd01c798494/go.mod h1:T13YZdzov6OU0A1+RfKZiZN9ca6VeKdBdyDV+BY97Tk=
