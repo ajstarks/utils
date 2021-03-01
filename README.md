@@ -8,6 +8,7 @@
 * dict - lookup words via dictionary servers
 * deckle - make deckled edges using deck markup
 * dpi - compute dots per inch and aspect ratio
+* fanchart - make Dubois-style fan charts
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fstat - show file status
 * gitdate - visualize git commits over time

@@ -1,4 +1,4 @@
-// fanchart -- make a fanchart like Dubois plate 27 from CSV data,
+// fanchart -- make a fanchart like Dubois plate 27, reading from a CSV data,
 package main
 
 import (
@@ -26,15 +26,15 @@ type Dataset struct {
 }
 
 const (
-	midx        = 50.0
-	ty          = 95.0
-	arcsize     = 30.0
-	wrapwidth   = 12.0
-	titlesize   = 3.0
-	notesize    = titlesize * 0.6
-	topbegAngle = 145.0
-	botbegAngle = 215.0
-	fanspan     = 110.0
+	midx        = 50.0            // middle of the canvas
+	ty          = 95.0            // title y coordinate
+	arcsize     = 30.0            // size of the wedges
+	wrapwidth   = 12.0            // when to wrap legend titles
+	titlesize   = 3.0             // text size of titles
+	notesize    = titlesize * 0.6 // text size of footnotes
+	topbegAngle = 145.0           // top beginning angle
+	botbegAngle = 215.0           // bottom beginning angle
+	fanspan     = 110.0           // span size of the top and bottom of the fan
 )
 
 // title makes a title
@@ -108,6 +108,7 @@ func arclabel(cx, cy, a1, a2, asize, value, cw, ch float64) {
 	fmt.Printf("ctext \"%s%%\" %.3f %.3f 1.5\n", v, lx, ly)
 }
 
+// polar to Cartesian coordinates, corrected for aspect ratio
 func polar(cx, cy, r, theta, cw, ch float64) (float64, float64) {
 	ry := r * (cw / ch)
 	t := theta * (math.Pi / 180)
@@ -145,6 +146,17 @@ func botfan(dataset Dataset, cx, cy, asize, start, fansize, cw, ch float64) {
 	}
 }
 
+// readData reads a CSV file containing top and bottom fan data
+// File layout:
+//
+// column headers
+// title,footnotes
+// section name
+// item,value,color
+// ...
+// bottom section name
+// item,value,color
+// ...
 func readData(filename string) (Dataset, Dataset, error) {
 	var topdata, botdata Dataset
 	var td, bd Measure
@@ -180,12 +192,12 @@ func readData(filename string) (Dataset, Dataset, error) {
 			continue
 		}
 		// check to see if we are in the top (setnum=1) or bottom set (setnum=2)
-		if newset(record, n) {
+		if isheader(record) {
 			setnum++
 		}
 		switch setnum {
 		case 1:
-			if len(record[1]) == 0 && len(record[2]) == 0 { // set header
+			if isheader(record) { // set header
 				topdata.name = record[0]
 			} else { // load set data
 				td.name = record[0]
@@ -195,7 +207,7 @@ func readData(filename string) (Dataset, Dataset, error) {
 				topcount++
 			}
 		case 2:
-			if len(record[1]) == 0 && len(record[2]) == 0 { // set header
+			if isheader(record) { // set header
 				botdata.name = record[0]
 			} else { //load  set data
 				bd.name = record[0]
@@ -215,34 +227,41 @@ func readData(filename string) (Dataset, Dataset, error) {
 	return topdata, botdata, nil
 }
 
-func newset(s []string, n int) bool {
+// newset determines if a new set of data has begun in the input
+func isheader(s []string) bool {
 	return len(s[1]) == 0 && len(s[2]) == 0
 }
 
+// beginDeck makes the markup to begin a deck
 func beginDeck(w, h float64) {
 	fmt.Printf("deck\ncanvas %v %v\n", w, h)
 }
 
+// beginSlide makes the markup to begin a slide
 func beginSlide() {
 	fmt.Println("slide")
 }
 
+// endSlide makes the markup to end a slide
 func endSlide() {
 	fmt.Println("eslide")
 }
 
+// beginDeck makes the markup to begin a deck
 func endDeck() {
 	fmt.Println("edeck")
 }
 
+// note makes a footnote
 func note(s string) {
-	ctext(s, 50, 10, notesize)
+	ctext(s, 50, 3, notesize)
 }
+
 func main() {
 	var canvasWidth, canvasHeight, arcsize float64
-	flag.Float64Var(&canvasHeight, "h", 612, "canvas height")
-	flag.Float64Var(&canvasWidth, "w", 792, "canvas width")
-	flag.Float64Var(&arcsize, "size", 35, "fansize")
+	flag.Float64Var(&canvasHeight, "h", 612, "canvas height") // canvas height
+	flag.Float64Var(&canvasWidth, "w", 792, "canvas width")   // canvas width
+	flag.Float64Var(&arcsize, "size", 30, "fansize")          // size of the fan
 	flag.Parse()
 
 	beginDeck(canvasWidth, canvasHeight)
