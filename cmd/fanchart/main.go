@@ -44,7 +44,8 @@ func title(s string) {
 
 // arc draws a filled arc
 func arc(cx, cy, a1, a2, size float64, color string) {
-	fmt.Printf("arc %.2f %.2f %.2f %.2f %.2f %.2f %.2f %q\n", cx, cy, size, size, a1, a2, size, color)
+	fmt.Printf("arc %.2f %.2f %.2f %.2f %.2f %.2f %.2f %q\n",
+		cx, cy, size, size, a1, a2, size, color)
 }
 
 // circle makes a filled circle
@@ -55,6 +56,11 @@ func circle(x, y, r float64, color string) {
 // textblock makes a block of text
 func textblock(s string, x, y, size, width float64) {
 	fmt.Printf("textblock \"%s\" %v %v %v %v\n", s, x, y, width, size)
+}
+
+// text renders text at specified location and size
+func text(s string, x, y, size float64) {
+	fmt.Printf("text \"%s\" %v %v %v\n", s, x, y, size)
 }
 
 // ctext makes centered text
@@ -69,12 +75,12 @@ func legend(data []Measure, rows int, ts float64) {
 	x := 5.0
 	y := 60.0
 	r := ts + 1.0
-	tw := wrapwidth
+	//tw := wrapwidth
 	// left legend
 	for i := 0; i < left; i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
-		textblock(label, x+3, textshift(label, y, ts), ts, tw)
+		legendlabel(label, x+3, y, ts)
 		y -= 10.0
 	}
 	// right legend
@@ -83,21 +89,24 @@ func legend(data []Measure, rows int, ts float64) {
 	for i := left; i < len(data); i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
-		textblock(label, x-20, textshift(label, y, ts), ts, tw)
+		legendlabel(label, x-20, y, ts)
 		y -= 10.0
 	}
 }
 
-// textshift aligns text to a point depending on the size of the text
-func textshift(s string, y, ts float64) float64 {
-	var ty float64
-	w := strings.Split(s, " ")
-	if len(w) > 2 {
-		ty = y + (ts / 2)
+// legendlabel lays out the legend labels
+func legendlabel(s string, x, y, ts float64) {
+	w := strings.Split(s, "--")
+	lw := len(w)
+	if lw == 1 {
+		text(s, x, y-(ts/3), ts)
 	} else {
-		ty = y - (ts / 3)
+		y = y + (ts * (float64(lw / 3)))
+		for i := 0; i < lw; i++ {
+			text(w[i], x, y, ts)
+			y -= (ts * 1.5)
+		}
 	}
-	return ty
 }
 
 // arclabel
