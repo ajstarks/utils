@@ -96,7 +96,7 @@ func legend(data []Measure, rows int, ts float64) {
 
 // legendlabel lays out the legend labels
 func legendlabel(s string, x, y, ts float64) {
-	w := strings.Split(s, "--")
+	w := strings.Split(s, `\n`)
 	lw := len(w)
 	if lw == 1 {
 		text(s, x, y-(ts/3), ts)
