@@ -53,11 +53,6 @@ func circle(x, y, r float64, color string) {
 	fmt.Printf("circle %v %v %v %q\n", x, y, r, color)
 }
 
-// textblock makes a block of text
-func textblock(s string, x, y, size, width float64) {
-	fmt.Printf("textblock \"%s\" %v %v %v %v\n", s, x, y, width, size)
-}
-
 // text renders text at specified location and size
 func text(s string, x, y, size float64) {
 	fmt.Printf("text \"%s\" %v %v %v\n", s, x, y, size)
