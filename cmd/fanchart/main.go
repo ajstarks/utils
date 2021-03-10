@@ -27,9 +27,9 @@ type Dataset struct {
 
 const (
 	midx        = 50.0            // middle of the canvas
+	midy        = 50.0            // middle of the canvas
 	ty          = 95.0            // title y coordinate
 	arcsize     = 30.0            // size of the wedges
-	wrapwidth   = 12.0            // when to wrap legend titles
 	titlesize   = 3.0             // text size of titles
 	notesize    = titlesize * 0.6 // text size of footnotes
 	topbegAngle = 145.0           // top beginning angle
@@ -75,7 +75,6 @@ func legend(data []Measure, rows int, ts float64) {
 	x := 5.0
 	y := 60.0
 	r := ts + 1.0
-	//tw := wrapwidth
 	// left legend
 	for i := 0; i < left; i++ {
 		label := data[i].name
@@ -124,12 +123,14 @@ func polar(cx, cy, r, theta, cw, ch float64) (float64, float64) {
 	return cx + (r * math.Cos(t)), cy + (ry * math.Sin(t))
 }
 
-// topfan makes the top of the fan chart
-func topfan(dataset Dataset, cx, cy, asize, start, fansize, cw, ch float64) {
-	lx, ly := polar(cx, cy, asize+1, 90, cw, ch)
-	ctext(dataset.name, lx, ly, 2)
-	data := dataset.measures
-	for _, d := range data {
+// fan makes the top and bottom fan
+func fan(top, bot Dataset, cx, cy, asize, fansize, cw, ch float64) {
+	var lx, ly, start float64
+	// the top of the fan chart
+	lx, ly = polar(cx, cy, asize+1, 90, cw, ch)
+	ctext(top.name, lx, ly, 2)
+	start = topbegAngle
+	for _, d := range top.measures {
 		m := (d.value / 100) * fansize
 		a1 := start - m
 		a2 := start
@@ -137,15 +138,12 @@ func topfan(dataset Dataset, cx, cy, asize, start, fansize, cw, ch float64) {
 		arclabel(cx, cy, a1, a2, asize, d.value, cw, ch)
 		start = a1
 	}
-}
-
-// botfan makes the bottom of the fan chart
-func botfan(dataset Dataset, cx, cy, asize, start, fansize, cw, ch float64) {
-	lx, ly := polar(cx, cy, asize+2, 270, cw, ch)
-	ctext(dataset.name, lx, ly, 2)
-	data := dataset.measures
-	for i := len(data) - 1; i >= 0; i-- {
-		d := data[i]
+	// bottom of the fan chart
+	lx, ly = polar(cx, cy, asize+2, 270, cw, ch)
+	ctext(bot.name, lx, ly, 2)
+	start = botbegAngle
+	for i := len(bot.measures) - 1; i >= 0; i-- {
+		d := bot.measures[i]
 		m := (d.value / 100) * fansize
 		a1 := start + m
 		a2 := start
@@ -281,8 +279,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
-		topfan(topdata, midx, 50, arcsize, topbegAngle, fanspan, canvasWidth, canvasHeight)
-		botfan(botdata, midx, 50, arcsize, botbegAngle, fanspan, canvasWidth, canvasHeight)
+		fan(topdata, botdata, midx, midy, arcsize, fanspan, canvasWidth, canvasHeight)
 		legend(topdata.measures, 3, 1.5)
 		endSlide()
 	}
