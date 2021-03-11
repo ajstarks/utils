@@ -1,4 +1,6 @@
-// fanchart -- make a fanchart like Dubois plate 27, reading from a CSV data,
+// fanchart -- make a fanchart like Dubois plate 27, reading from a CSV data
+// generates deck markup
+// usage: fanchart file | deckrenderer
 package main
 
 import (
@@ -25,17 +27,36 @@ type Dataset struct {
 	measures []Measure
 }
 
+type drawfunc func(Dataset, Dataset, float64, float64, float64, float64, float64)
+
 const (
-	midx        = 50.0            // middle of the canvas
-	midy        = 50.0            // middle of the canvas
-	ty          = 95.0            // title y coordinate
-	arcsize     = 30.0            // size of the wedges
-	titlesize   = 3.0             // text size of titles
-	notesize    = titlesize * 0.6 // text size of footnotes
-	topbegAngle = 145.0           // top beginning angle
-	botbegAngle = 215.0           // bottom beginning angle
-	fanspan     = 110.0           // span size of the top and bottom of the fan
+	midx          = 50.0            // middle of the canvas
+	midy          = 50.0            // middle of the canvas
+	ty            = 95.0            // title y coordinate
+	arcsize       = 30.0            // size of the wedges
+	titlesize     = 3.0             // text size of titles
+	catsize       = 2.0             // size of data category label
+	legendsize    = 1.8             // legend label size
+	labelsize     = 1.5             // data label size
+	notesize      = titlesize * 0.6 // text size of footnotes
+	topbegAngle   = 145.0           // top beginning angle
+	botbegAngle   = 215.0           // bottom beginning angle
+	fanspan       = 110.0           // span size of the top and bottom of the fan
+	leftbegAngle  = 135.0           // left beginning angle
+	rightbegAngle = 315.0           // right beginning angle
+	wingspan      = 90.0            // span size of the left and right wings
 )
+
+// xmlmap defines the XML substitutions
+var xmlmap = strings.NewReplacer(
+	"&", "&amp;",
+	"<", "&lt;",
+	">", "&gt;")
+
+// xmlesc XML escapes a string
+func xmlesc(s string) string {
+	return xmlmap.Replace(s)
+}
 
 // title makes a title
 func title(s string) {
@@ -44,47 +65,90 @@ func title(s string) {
 
 // arc draws a filled arc
 func arc(cx, cy, a1, a2, size float64, color string) {
-	fmt.Printf("arc %.2f %.2f %.2f %.2f %.2f %.2f %.2f %q\n",
+	fmt.Printf(
+		"<arc xp=\"%.2f\" yp=\"%.2f\" wp=\"%.2f\" hp=\"%.2f\" a1=\"%.2f\" a2=\"%.2f\" sp=\"%.2f\" color=%q/>\n",
 		cx, cy, size, size, a1, a2, size, color)
 }
 
 // circle makes a filled circle
 func circle(x, y, r float64, color string) {
-	fmt.Printf("circle %v %v %v %q\n", x, y, r, color)
+	fmt.Printf("<ellipse xp=\"%v\" yp=\"%v\" wp=\"%v\" hr=\"100\" color=%q/>\n", x, y, r, color)
 }
 
 // text renders text at specified location and size
 func text(s string, x, y, size float64) {
-	fmt.Printf("text \"%s\" %v %v %v\n", s, x, y, size)
+	fmt.Printf("<text xp=\"%v\" yp=\"%v\" sp=\"%v\">%s</text>\n", x, y, size, xmlesc(s))
+}
+
+// etext renders text at specified location and size, end justified
+func etext(s string, x, y, size float64) {
+	fmt.Printf("<text align=\"e\" xp=\"%v\" yp=\"%v\" sp=\"%v\">%s</text>\n", x, y, size, xmlesc(s))
 }
 
 // ctext makes centered text
 func ctext(s string, x, y, size float64) {
-	fmt.Printf("ctext \"%s\" %v %v %v\n", s, x, y, size)
+	fmt.Printf("<text align=\"c\" xp=\"%v\" yp=\"%v\"sp=\"%v\">%s</text>\n", x, y, size, xmlesc(s))
+}
+
+// beginDeck makes the markup to begin a deck
+func beginDeck(w, h float64) {
+	fmt.Printf("<deck>\n<canvas width=\"%v\" height=\"%v\"/>\n", w, h)
+}
+
+// beginSlide makes the markup to begin a slide
+func beginSlide() {
+	fmt.Println("<slide>")
+}
+
+// endSlide makes the markup to end a slide
+func endSlide() {
+	fmt.Println("</slide>")
+}
+
+// beginDeck makes the markup to begin a deck
+func endDeck() {
+	fmt.Println("</deck>")
 }
 
 // legend makes a balanced left and right hand legend
-func legend(data []Measure, rows int, ts float64) {
+func legend(data []Measure, orientation string, rows int, ts float64) {
+	var x, y, xoffset float64
 	right := len(data) % rows
 	left := len(data) - right
-	x := 5.0
-	y := 60.0
 	r := ts + 1.0
-	// left legend
+	leading := ts * 6
+
+	switch orientation {
+	case "tb":
+		x = 5.0
+		y = 60.0
+	case "lr":
+		x = midx - 10
+		y = 87.0
+	}
+	// left/top legend
+	xoffset = 3
 	for i := 0; i < left; i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
-		legendlabel(label, x+3, y, ts)
-		y -= 10.0
+		legendlabel(label, x+xoffset, y, ts)
+		y -= leading
 	}
-	// right legend
-	x = 100 - x
-	y = 60
+	// right/bottom legend
+	switch orientation {
+	case "tb":
+		x = 100 - x
+		y = 60
+		xoffset = -20.0
+	case "lr":
+		y = 25.0
+	}
+
 	for i := left; i < len(data); i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
-		legendlabel(label, x-20, y, ts)
-		y -= 10.0
+		legendlabel(label, x+xoffset, y, ts)
+		y -= leading
 	}
 }
 
@@ -98,17 +162,17 @@ func legendlabel(s string, x, y, ts float64) {
 		y = y + (ts * (float64(lw / 3)))
 		for i := 0; i < lw; i++ {
 			text(w[i], x, y, ts)
-			y -= (ts * 1.5)
+			y -= (ts * 1.8)
 		}
 	}
 }
 
-// arclabel
+// arclabel labels the data items
 func arclabel(cx, cy, a1, a2, asize, value, cw, ch float64) {
 	v := strconv.FormatFloat(value, 'f', 1, 64)
 	diff := a2 - a1
 	lx, ly := polar(cx, cy, asize*0.75, a1+(diff*0.5), cw, ch)
-	fmt.Printf("ctext \"%s%%\" %.3f %.3f 1.5\n", v, lx, ly)
+	ctext(v+"%", lx, ly, labelsize)
 }
 
 // polar to Cartesian coordinates, corrected for aspect ratio
@@ -118,15 +182,39 @@ func polar(cx, cy, r, theta, cw, ch float64) (float64, float64) {
 	return cx + (r * math.Cos(t)), cy + (ry * math.Sin(t))
 }
 
+// wedge makes data wedges
+func wedge(data Dataset, cx, cy, begAngle, asize, cw, ch float64) {
+	start := begAngle
+	for _, d := range data.measures {
+		m := (d.value / 100) * wingspan
+		a1 := start
+		a2 := start + m
+		arc(cx, cy, a1, a2, asize, d.color)
+		arclabel(cx, cy, a1, a2, asize, d.value, cw, ch)
+		start = a2
+	}
+}
+
+// wings makes left and right data "wings"
+func wings(top, bot Dataset, cx, cy, asize, cw, ch float64) {
+	var lx, ly float64
+	lx, ly = polar(cx, cy, asize+1, 180, cw, ch)
+	etext(top.name, lx, ly, legendsize)
+	wedge(top, cx, cy, leftbegAngle, asize, cw, ch)
+	lx, ly = polar(cx, cy, asize+1, 0, cw, ch)
+	text(bot.name, lx, ly, legendsize)
+	wedge(bot, cx, cy, rightbegAngle, asize, cw, ch)
+}
+
 // fan makes the top and bottom fan
-func fan(top, bot Dataset, cx, cy, asize, fansize, cw, ch float64) {
+func fan(top, bot Dataset, cx, cy, asize, cw, ch float64) {
 	var lx, ly, start float64
 	// the top of the fan chart
 	lx, ly = polar(cx, cy, asize+1, 90, cw, ch)
-	ctext(top.name, lx, ly, 2)
+	ctext(top.name, lx, ly, catsize)
 	start = topbegAngle
 	for _, d := range top.measures {
-		m := (d.value / 100) * fansize
+		m := (d.value / 100) * fanspan
 		a1 := start - m
 		a2 := start
 		arc(cx, cy, a1, a2, asize, d.color)
@@ -135,11 +223,11 @@ func fan(top, bot Dataset, cx, cy, asize, fansize, cw, ch float64) {
 	}
 	// bottom of the fan chart
 	lx, ly = polar(cx, cy, asize+2, 270, cw, ch)
-	ctext(bot.name, lx, ly, 2)
+	ctext(bot.name, lx, ly, catsize)
 	start = botbegAngle
 	for i := len(bot.measures) - 1; i >= 0; i-- {
 		d := bot.measures[i]
-		m := (d.value / 100) * fansize
+		m := (d.value / 100) * fanspan
 		a1 := start + m
 		a2 := start
 		arc(cx, cy, a2, a1, asize, d.color)
@@ -222,7 +310,8 @@ func readData(filename string) (Dataset, Dataset, error) {
 	}
 	if topcount != botcount {
 		fmt.Fprintf(os.Stderr,
-			"The number of top items, %d is not the same as the bottom: %d\n", topcount, botcount)
+			"The number of top items, %d is not the same as the bottom: %d\n",
+			topcount, botcount)
 	}
 	topdata.measures = tds
 	botdata.measures = bds
@@ -234,26 +323,6 @@ func isheader(s []string) bool {
 	return len(s[1]) == 0 && len(s[2]) == 0
 }
 
-// beginDeck makes the markup to begin a deck
-func beginDeck(w, h float64) {
-	fmt.Printf("deck\ncanvas %v %v\n", w, h)
-}
-
-// beginSlide makes the markup to begin a slide
-func beginSlide() {
-	fmt.Println("slide")
-}
-
-// endSlide makes the markup to end a slide
-func endSlide() {
-	fmt.Println("eslide")
-}
-
-// beginDeck makes the markup to begin a deck
-func endDeck() {
-	fmt.Println("edeck")
-}
-
 // note makes a footnote
 func note(s string) {
 	ctext(s, 50, 3, notesize)
@@ -261,21 +330,28 @@ func note(s string) {
 
 func main() {
 	var canvasWidth, canvasHeight, arcsize float64
+	var orientation string
+
 	flag.Float64Var(&canvasHeight, "h", 612, "canvas height") // canvas height
 	flag.Float64Var(&canvasWidth, "w", 792, "canvas width")   // canvas width
-	flag.Float64Var(&arcsize, "size", 30, "fansize")          // size of the fan
+	flag.Float64Var(&arcsize, "size", 30, "fan/wing size")    // size of the fan
+	flag.StringVar(&orientation, "orientation", "tb", "orientation (tb=Top/Bottom, lr=Left/Right)")
 	flag.Parse()
 
 	beginDeck(canvasWidth, canvasHeight)
 	for _, f := range flag.Args() {
 		beginSlide()
-		topdata, botdata, err := readData(f)
+		data1, data2, err := readData(f)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			continue
 		}
-		fan(topdata, botdata, midx, midy, arcsize, fanspan, canvasWidth, canvasHeight)
-		legend(topdata.measures, 3, 1.5)
+		if orientation == "tb" {
+			fan(data1, data2, midx, midy, arcsize, canvasWidth, canvasHeight)
+		} else {
+			wings(data1, data2, midx, midy, arcsize, canvasWidth, canvasHeight)
+		}
+		legend(data1.measures, orientation, 3, labelsize)
 		endSlide()
 	}
 	endDeck()
