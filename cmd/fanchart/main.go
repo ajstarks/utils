@@ -27,8 +27,6 @@ type Dataset struct {
 	measures []Measure
 }
 
-type drawfunc func(Dataset, Dataset, float64, float64, float64, float64, float64)
-
 const (
 	midx          = 50.0            // middle of the canvas
 	midy          = 50.0            // middle of the canvas
@@ -143,7 +141,6 @@ func legend(data []Measure, orientation string, rows int, ts float64) {
 	case "lr":
 		y = 25.0
 	}
-
 	for i := left; i < len(data); i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
@@ -171,7 +168,7 @@ func legendlabel(s string, x, y, ts float64) {
 func arclabel(cx, cy, a1, a2, asize, value, cw, ch float64) {
 	v := strconv.FormatFloat(value, 'f', 1, 64)
 	diff := a2 - a1
-	lx, ly := polar(cx, cy, asize*0.75, a1+(diff*0.5), cw, ch)
+	lx, ly := polar(cx, cy, asize*0.9, a1+(diff*0.5), cw, ch)
 	ctext(v+"%", lx, ly, labelsize)
 }
 
@@ -238,7 +235,6 @@ func fan(top, bot Dataset, cx, cy, asize, cw, ch float64) {
 
 // readData reads a CSV file containing top and bottom fan data
 // File layout:
-//
 // column headers
 // title,footnotes
 // section name

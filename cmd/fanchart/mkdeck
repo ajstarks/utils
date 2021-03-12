@@ -1,0 +1,3 @@
+#!/bin/sh
+go run main.go -orientation=lr *.csv | pdfdeck -stdout - > lr.pdf
+go run main.go -orientation=tb *.csv | pdfdeck -stdout - > tb.pdf
