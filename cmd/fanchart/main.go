@@ -94,8 +94,8 @@ func beginDeck(w, h float64) {
 }
 
 // beginSlide makes the markup to begin a slide
-func beginSlide() {
-	fmt.Println("<slide>")
+func beginSlide(bgcolor, textcolor string) {
+	fmt.Printf("<slide bg=%q fg=%q>\n", bgcolor, textcolor)
 }
 
 // endSlide makes the markup to end a slide
@@ -326,17 +326,20 @@ func note(s string) {
 
 func main() {
 	var canvasWidth, canvasHeight, arcsize float64
-	var orientation string
+	var orientation, textcolor, bgcolor string
 
 	flag.Float64Var(&canvasHeight, "h", 612, "canvas height") // canvas height
 	flag.Float64Var(&canvasWidth, "w", 792, "canvas width")   // canvas width
 	flag.Float64Var(&arcsize, "size", 30, "fan/wing size")    // size of the fan
 	flag.StringVar(&orientation, "orientation", "tb", "orientation (tb=Top/Bottom, lr=Left/Right)")
+	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&textcolor, "textcolor", "black", "text color")
+
 	flag.Parse()
 
 	beginDeck(canvasWidth, canvasHeight)
 	for _, f := range flag.Args() {
-		beginSlide()
+		beginSlide(bgcolor, textcolor)
 		data1, data2, err := readData(f)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
