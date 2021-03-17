@@ -49,7 +49,7 @@ for example: given data.csv
 
 ![tbchart](tbchart.png)
 
-```fanchart data.csv -orientation=lr | pdfdeck -stdout - > lrchart.pdf``` makes
+```fanchart data.csv -dir=lr | pdfdeck -stdout - > lrchart.pdf``` makes
 
 ![lrchart](lrchart.png)
 
