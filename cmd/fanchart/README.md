@@ -8,7 +8,7 @@ Options:
 
 	-h float
 			canvas height (default 612)
-	-orientation string
+	-dir string
 			orientation (tb=Top/Bottom, lr=Left/Right) (default "tb")
 	-size float
 			fan/wing size (default 30)
