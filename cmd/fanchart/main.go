@@ -331,7 +331,7 @@ func main() {
 	flag.Float64Var(&canvasHeight, "h", 612, "canvas height") // canvas height
 	flag.Float64Var(&canvasWidth, "w", 792, "canvas width")   // canvas width
 	flag.Float64Var(&arcsize, "size", 30, "fan/wing size")    // size of the fan
-	flag.StringVar(&orientation, "orientation", "tb", "orientation (tb=Top/Bottom, lr=Left/Right)")
+	flag.StringVar(&orientation, "dir", "tb", "orientation (tb=Top/Bottom, lr=Left/Right)")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&textcolor, "textcolor", "black", "text color")
 
