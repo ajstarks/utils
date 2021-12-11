@@ -1,3 +1,4 @@
+// mfunc: math functions
 package main
 
 import (
@@ -16,6 +17,8 @@ func main() {
 	min := flag.Float64("min", 0.0, "minimum")
 	max := flag.Float64("max", math.Pi*2, "maximum")
 	incr := flag.Float64("incr", 0.1, "increment")
+	xfmt := flag.String("xfmt", "%.2f", "x format")
+	yfmt := flag.String("yfmt", "%.4f", "y format")
 	flag.Parse()
 	var f tfunc
 	switch *funcname {
@@ -42,7 +45,8 @@ func main() {
 		f = tfunc{"y=1", func(float64) float64 { return 1 }}
 	}
 	fmt.Printf("# %s\n", f.label)
-	for x := *min; x < *max; x += *incr {
-		fmt.Printf("%.2f\t%.4f\n", x, f.function(x))
+	format := *xfmt + "\t" + *yfmt + "\n"
+	for x := *min; x <= *max; x += *incr {
+		fmt.Printf(format, x, f.function(x))
 	}
 }
