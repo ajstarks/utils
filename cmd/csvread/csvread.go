@@ -9,15 +9,31 @@ import (
 	"strconv"
 )
 
+// letterindex returns a number corresponding to the letter, or just the number
+func column(s string) int {
+	if len(s) == 0 {
+		return 0
+	}
+	first := s[0]
+	switch {
+	case first >= 'a' && first <= 'z':
+		return int(first - 'a')
+	case first >= 'A' && first <= 'Z':
+		return int(first - 'A')
+	default:
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			return 0
+		}
+		return n
+	}
+}
+
 // getf turns a string slice of numbers into a slice of integers
 func getf(s []string) []int {
 	fn := []int{}
 	for _, f := range s {
-		n, err := strconv.Atoi(f)
-		if err != nil {
-			continue
-		}
-		fn = append(fn, n)
+		fn = append(fn, column(f))
 	}
 	return fn
 }

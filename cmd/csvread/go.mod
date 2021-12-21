@@ -1,3 +1,3 @@
-module github.com/ajstarks/csvread
+module github.com/ajstarks //utils/cmd/csvread
 
 go 1.16
