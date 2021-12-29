@@ -1,4 +1,5 @@
 // gitdate: visualize git commit history
+// git log --date iso | awk '/^Date:/ {print $2, $3, $4}' | gitdate ... | decksh | ...
 package main
 
 import (
@@ -11,13 +12,14 @@ import (
 )
 
 const (
-	gitime  = "Mon Jan 2 15:04:05 2006 -0700"
+	gitime  = "2006-01-02 15:04:05 -0700"
 	isotime = "2006-01-02T15:04:05-07:00"
 )
 
 type config struct {
 	title, btime, etime, color           string
 	left, right, radius, ypoint, opacity float64
+	fulldeck                             bool
 }
 
 // seconds returns the number of seconds of the specified time
@@ -51,6 +53,9 @@ func process(w io.Writer, r io.Reader, c config) error {
 	end := e.Unix()
 
 	labely := c.ypoint + 5
+	if c.fulldeck {
+		fmt.Fprintln(w, "deck\nslide")
+	}
 	fmt.Fprintf(w, "ctext %q %v %v %v\n", c.btime, c.left, labely, 1)
 	fmt.Fprintf(w, "ctext %q %v %v %v\n", c.etime, c.right, labely, 1)
 	fmt.Fprintf(w, "ctext %q %v %v 2\n", c.title, c.left+((c.right-c.left)/2), labely)
@@ -62,6 +67,9 @@ func process(w io.Writer, r io.Reader, c config) error {
 		s := seconds(t)
 		x := vmap(float64(s), float64(beg), float64(end), c.left, c.right)
 		fmt.Fprintf(w, "circle %v %v %v %q %v\n", x, c.ypoint, c.radius, c.color, c.opacity)
+	}
+	if c.fulldeck {
+		fmt.Fprintln(w, "eslide\nedeck")
 	}
 	return scanner.Err()
 }
@@ -76,18 +84,20 @@ func main() {
 	left := flag.Float64("left", 10, "left")
 	right := flag.Float64("right", 90, "right")
 	opacity := flag.Float64("opacity", 20, "opacity")
+	fulldeck := flag.Bool("fulldeck", true, "full deck markup")
 	flag.Parse()
 
 	c := config{
-		title:   *title,
-		btime:   *btime,
-		etime:   *etime,
-		ypoint:  *ypoint,
-		radius:  *radius,
-		color:   *color,
-		opacity: *opacity,
-		left:    *left,
-		right:   *right,
+		title:    *title,
+		btime:    *btime,
+		etime:    *etime,
+		ypoint:   *ypoint,
+		radius:   *radius,
+		color:    *color,
+		opacity:  *opacity,
+		left:     *left,
+		right:    *right,
+		fulldeck: *fulldeck,
 	}
 
 	err := process(os.Stdout, os.Stdin, c)
