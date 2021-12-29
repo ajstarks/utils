@@ -1,4 +1,4 @@
-module github.com/ajstarks/swiss
+module github.com/ajstarks/utils/cmd/swiss
 
 go 1.16
 
