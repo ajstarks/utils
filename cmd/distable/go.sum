@@ -1,0 +1,4 @@
+github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9 h1:7kQgkwGRoLzC9K0oyXdJo7nve/bynv/KwUsxbiTlzAM=
+github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9/go.mod h1:JynElWSGnm/4RlzPXRlREEwqTHAN3T56Bv2ITsFT3gY=
+github.com/ajstarks/deck/generate v0.0.0-20220116200525-3f887d0c5850 h1:3s9s3Z30llE9vs4EdcrP0trpA6tlHNmktm/K/JPw+5w=
+github.com/ajstarks/deck/generate v0.0.0-20220116200525-3f887d0c5850/go.mod h1:T13YZdzov6OU0A1+RfKZiZN9ca6VeKdBdyDV+BY97Tk=
