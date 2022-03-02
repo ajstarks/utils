@@ -17,35 +17,6 @@ type dt struct {
 	dist []place
 }
 
-func distable(deck *generate.Deck, table []dt, left, top, size float64) {
-
-	distleft := left + (size * 12)
-	x := distleft - size
-	y := top
-	vspacing := size * 2.4
-	hspacing := size * 2.4
-	for _, t := range table {
-		deck.TextRotate(x, y-vspacing, t.name, "", "serif", 90, size, "")
-		x += hspacing
-		y -= vspacing
-	}
-
-	x = left
-	y = top - vspacing
-	for _, t := range table {
-		deck.Text(x, y, t.name, "serif", size, "")
-		dx := distleft
-		dy := y
-		for _, d := range t.dist {
-			td := strconv.FormatFloat(d.distance, 'f', 1, 64)
-			deck.TextEnd(dx, dy, td, "mono", size, "")
-			deck.Rect(dx-size, dy+size/2, size+hspacing/2, size+vspacing*0.4, "red", 10)
-			dx += hspacing
-		}
-		y -= vspacing
-	}
-}
-
 func main() {
 
 	data := []dt{
@@ -654,4 +625,36 @@ func main() {
 	deck.EndSlide()
 	deck.EndDeck()
 
+}
+
+func distable(deck *generate.Deck, table []dt, left, top, size float64) {
+
+	distleft := left + (size * 12)
+	x := distleft - size
+	y := top
+	vspacing := size * 2.4
+	hspacing := size * 2.4
+	for _, t := range table {
+		deck.TextRotate(x, y-vspacing, t.name, "", "serif", 90, size, "")
+		deck.Line(x-size-0.2, y-1, x-size-0.2, 2, 0.05, "gray")
+		x += hspacing
+		y -= vspacing
+	}
+
+	x = left
+	y = top - vspacing
+	for _, t := range table {
+		deck.Text(x, y, t.name, "serif", size, "")
+		dx := distleft
+		dy := y
+
+		for _, d := range t.dist {
+			td := strconv.FormatFloat(d.distance, 'f', 1, 64)
+			deck.TextEnd(dx, dy, td, "mono", size, "")
+			//deck.Rect(dx-size, dy+size/2, size+hspacing/2, size+vspacing*0.4, "red", 10)
+			dx += hspacing
+		}
+		deck.Line(distleft-size*2, y-1, dx+0.2, y-1, 0.05, "gray")
+		y -= vspacing
+	}
 }
