@@ -618,8 +618,8 @@ func main() {
 	deck.StartDeck()
 	deck.StartSlide()
 	deck.Text(40, 95, "TABLE OF DISTANCES", "sans", 3, "gray")
-	deck.Text(40, 89, "MORRIS COUNTY, NEW JERSEY", "serif", 3.5, "")
-	deck.TextBlock(40, 85, "Showing the distance in miles and tenths, in an air line from one place to another", "serif", 1.5, 50, "gray")
+	deck.Text(40, 89, "MORRIS COUNTY, NEW JERSEY", "sans", 3.5, "")
+	deck.TextBlock(40, 85, "Showing the distance in miles and tenths, in an air line from one place to another", "serif", 1.5, 50, "")
 
 	distable(deck, data, 1, 90, 1.1)
 	deck.EndSlide()
@@ -629,8 +629,8 @@ func main() {
 
 func distable(deck *generate.Deck, table []dt, left, top, size float64) {
 
-	distleft := left + (size * 12)
-	x := distleft - size
+	distleft := left + (size * 10)
+	x := distleft
 	y := top
 	vspacing := size * 2.4
 	hspacing := size * 2.4
@@ -650,11 +650,11 @@ func distable(deck *generate.Deck, table []dt, left, top, size float64) {
 
 		for _, d := range t.dist {
 			td := strconv.FormatFloat(d.distance, 'f', 1, 64)
-			deck.TextEnd(dx, dy, td, "mono", size, "")
-			//deck.Rect(dx-size, dy+size/2, size+hspacing/2, size+vspacing*0.4, "red", 10)
+			deck.TextMid(dx, dy, td, "mono", size, "")
+			//deck.Rect(dx, dy+0.4, size+hspacing/2, size+vspacing*0.4, "red", 10)
 			dx += hspacing
 		}
-		deck.Line(distleft-size*2, y-1, dx+0.2, y-1, 0.05, "gray")
+		deck.Line(distleft-size, y-1, dx+size+0.3, y-1, 0.05, "gray")
 		y -= vspacing
 	}
 }
