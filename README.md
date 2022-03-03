@@ -6,6 +6,7 @@
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
 * dict - lookup words via dictionary servers
+* distable - make a distance table
 * deckle - make deckled edges using deck markup
 * dpi - compute dots per inch and aspect ratio
 * fanchart - make Dubois-style fan charts
