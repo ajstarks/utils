@@ -3,7 +3,9 @@
 ![distable](morris.png)
 
 Derived from the design seen in the atlas of Morris county, New Jersey from 1868,
-make a distance table using deck markup.  
+```distable``` makes a distance table using deck markup.
+
+## Data format
 
 distable takes as input a file with this format:
 
@@ -30,5 +32,29 @@ Chester
 	Chatham:15.10
 ```
 
-	$ go run distable.go < morris.d | pdfdeck -stdout - > morris.pdf
+## Command options
+
+Read from named files or standard input.
+```
+
+distable [options] file...
+
+Options:
+  -left float
+    	left margin (default 1)
+  -size float
+    	text size (default 1.1)
+  -subtitle string
+    	subtitle (default "distance in miles")
+  -title string
+    	chart title (default "Distances")
+  -top float
+    	top (default 90)
+
+```
+
+
+## Running
+
+	$ distable.go  morris.d | pdfdeck -stdout - > morris.pdf
 
