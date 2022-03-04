@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -22,23 +23,47 @@ type distanceTable struct {
 }
 
 func main() {
-	data, err := readtable(os.Stdin)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "error reading the input")
-		os.Exit(1)
+	var title, subtitle string
+	var left, top, size float64
+	flag.StringVar(&title, "title", "Distances", "chart title")
+	flag.StringVar(&subtitle, "subtitle", "distance in miles", "subtitle")
+	flag.Float64Var(&left, "left", 1, "left margin")
+	flag.Float64Var(&top, "top", 90, "top")
+	flag.Float64Var(&size, "size", 1.1, "text size")
+	flag.Parse()
+	files := flag.Args()
+	if len(files) == 0 {
+		makeslide("-", os.Stdout, title, subtitle, left, top, size)
+	} else {
+		for _, f := range files {
+			makeslide(f, os.Stdout, title, subtitle, left, top, size)
+		}
 	}
-	makeslide(os.Stdout, data, "Morris County, New Jersey")
 }
 
 // makeside makes the slide deck
-func makeslide(w io.Writer, data []distanceTable, title string) {
+func makeslide(f string, w io.Writer, title, subtitle string, left, top, size float64) {
+	var data []distanceTable
+	var err error
+	var r io.Reader
+	if f == "-" {
+		r = os.Stdin
+	} else {
+		r, err = os.Open(f)
+		if err != nil {
+			return
+		}
+	}
+	data, err = readtable(r)
+	if err != nil {
+		return
+	}
 	deck := generate.NewSlides(w, 0, 0)
 	deck.StartDeck()
 	deck.StartSlide()
-	deck.Text(40, 95, "TABLE OF DISTANCES", "sans", 3, "gray")
 	deck.Text(40, 89, title, "sans", 3.5, "")
-	deck.TextBlock(40, 85, "Showing the distance in miles and tenths, in an air line from one place to another", "serif", 1.5, 50, "")
-	distable(deck, data, 1, 90, 1.1)
+	deck.TextBlock(40, 85, subtitle, "serif", 1.5, 50, "")
+	distable(deck, data, left, top, size)
 	deck.EndSlide()
 	deck.EndDeck()
 }
@@ -53,6 +78,7 @@ func readtable(r io.Reader) ([]distanceTable, error) {
 	var t distanceTable
 	var p place
 	var places []place
+
 	scanner := bufio.NewScanner(r)
 	n := -1
 	for scanner.Scan() {
@@ -77,8 +103,7 @@ func readtable(r io.Reader) ([]distanceTable, error) {
 			}
 		}
 	}
-	err := scanner.Err()
-	return table, err
+	return table, scanner.Err()
 }
 
 // dumptable prints out the distance table to an io.Writer
