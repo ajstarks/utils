@@ -1,0 +1,43 @@
+BEGIN {
+	city[1]="Anchorage"
+	city[2]="Atlanta"
+	city[3]="Austin"
+	city[4]="Baltimore"
+	city[5]="Boston"
+	city[6]="Chicago"
+	city[7]="Dallas"
+	city[8]="Denver"
+	city[9]="Honolulu"
+	city[10]="Houston"
+	city[11]="Indianapolis"
+	city[12]="Jacksonville"
+	city[13]="Las Vegas"
+	city[14]="Los Angeles"
+	city[15]="Memphis"
+	city[16]="Miami"
+	city[17]="New Orleans"
+	city[18]="New York"
+	city[19]="Newark"
+	city[20]="Oakland"
+	city[21]="Philadelphia"
+	city[22]="Phoenix"
+	city[23]="Portland"
+	city[24]="San Antonio"
+	city[25]="San Diego"
+	city[26]="San Francisco"
+	city[27]="San Jose"
+	city[28]="Seattle"
+	city[29]="Tampa"
+	city[30]="Tucson"
+	city[31]="Washington DC"
+
+	n=10
+}
+/^:/ {
+	printf "\t%s%s\n", city[n++],$1
+}
+
+/^[A-Z]/ {
+	print $0
+	n=1
+}

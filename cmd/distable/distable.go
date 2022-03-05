@@ -24,25 +24,26 @@ type distanceTable struct {
 
 func main() {
 	var title, subtitle string
-	var left, top, size float64
+	var left, top, size, dsize float64
 	flag.StringVar(&title, "title", "Distances", "chart title")
 	flag.StringVar(&subtitle, "subtitle", "distance in miles", "subtitle")
 	flag.Float64Var(&left, "left", 1, "left margin")
 	flag.Float64Var(&top, "top", 90, "top")
 	flag.Float64Var(&size, "size", 1.1, "text size")
+	flag.Float64Var(&dsize, "dsize", size*0.65, "distance text size")
 	flag.Parse()
 	files := flag.Args()
 	if len(files) == 0 {
-		makeslide("-", os.Stdout, title, subtitle, left, top, size)
+		makeslide("-", os.Stdout, title, subtitle, left, top, size, dsize)
 	} else {
 		for _, f := range files {
-			makeslide(f, os.Stdout, title, subtitle, left, top, size)
+			makeslide(f, os.Stdout, title, subtitle, left, top, size, dsize)
 		}
 	}
 }
 
 // makeside makes the slide deck
-func makeslide(f string, w io.Writer, title, subtitle string, left, top, size float64) {
+func makeslide(f string, w io.Writer, title, subtitle string, left, top, size, dsize float64) {
 	var data []distanceTable
 	var err error
 	var r io.Reader
@@ -63,7 +64,7 @@ func makeslide(f string, w io.Writer, title, subtitle string, left, top, size fl
 	deck.StartSlide()
 	deck.Text(40, 89, title, "sans", 3.5, "")
 	deck.TextBlock(40, 85, subtitle, "serif", 1.5, 50, "")
-	distable(deck, data, left, top, size)
+	distable(deck, data, left, top, size, dsize)
 	deck.EndSlide()
 	deck.EndDeck()
 }
@@ -95,7 +96,7 @@ func readtable(r io.Reader) ([]distanceTable, error) {
 		if strings.Contains(text, "\t") {
 			i := strings.Index(text, ":")
 			if i > 0 && len(text) > 3 {
-				d, _ := strconv.ParseFloat(text[i+1:], 64)
+				d, _ := strconv.ParseFloat(strings.TrimSpace(text[i+1:]), 64)
 				p.name = text[1:i]
 				p.distance = d
 				places = append(places, p)
@@ -107,27 +108,28 @@ func readtable(r io.Reader) ([]distanceTable, error) {
 }
 
 // dumptable prints out the distance table to an io.Writer
-func dumptable(w io.Writer, table []distanceTable) {
+func dumptable(w io.Writer, table []distanceTable, factor float64) {
 	for _, t := range table {
 		fmt.Fprintf(w, "%s\n", t.name)
 		for _, d := range t.dist {
-			fmt.Fprintf(w, "\t%s:%.2f\n", d.name, d.distance)
+			fmt.Fprintf(w, "\t%s:%.2f\n", d.name, d.distance*factor)
 		}
 	}
 }
 
 // distable makes a distance table using deck markup
-func distable(deck *generate.Deck, table []distanceTable, left, top, size float64) {
+func distable(deck *generate.Deck, table []distanceTable, left, top, size, dsize float64) {
 	distleft := left + (size * 10)
-	x := distleft
-	y := top
 	vspacing := size * 2.4
 	hspacing := size * 2.4
+	x := distleft
+	y := top
+	bottom := (top - (float64(len(table)) * vspacing)) - size
 
 	// vertical column headings
 	for _, t := range table {
 		deck.TextRotate(x, y-vspacing, t.name, "", "serif", 90, size, "")
-		deck.Line(x-size-0.2, y-1, x-size-0.2, 2, 0.05, "gray")
+		deck.Line(x-size-0.2, y-1, x-size-0.2, bottom, 0.05, "gray")
 		x += hspacing
 		y -= vspacing
 	}
@@ -142,7 +144,7 @@ func distable(deck *generate.Deck, table []distanceTable, left, top, size float6
 		// distances for each place
 		for _, d := range t.dist {
 			td := strconv.FormatFloat(d.distance, 'f', 1, 64)
-			deck.TextMid(dx, dy, td, "mono", size, "")
+			deck.TextMid(dx, dy, td, "mono", dsize, "")
 			dx += hspacing
 		}
 		deck.Line(distleft-size, y-1, dx+size+0.3, y-1, 0.05, "gray")
