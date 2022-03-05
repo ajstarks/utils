@@ -26,24 +26,28 @@ func main() {
 	var title, subtitle string
 	var left, top, size, dsize float64
 	flag.StringVar(&title, "title", "Distances", "chart title")
-	flag.StringVar(&subtitle, "subtitle", "distance in miles", "subtitle")
+	flag.StringVar(&subtitle, "subtitle", "", "subtitle")
 	flag.Float64Var(&left, "left", 1, "left margin")
 	flag.Float64Var(&top, "top", 90, "top")
 	flag.Float64Var(&size, "size", 1.1, "text size")
 	flag.Float64Var(&dsize, "dsize", size*0.65, "distance text size")
 	flag.Parse()
 	files := flag.Args()
+	deck := generate.NewSlides(os.Stdout, 0, 0)
+	deck.StartDeck()
 	if len(files) == 0 {
-		makeslide("-", os.Stdout, title, subtitle, left, top, size, dsize)
+		makeslide(deck, "-", os.Stdout, title, subtitle, left, top, size, dsize)
 	} else {
 		for _, f := range files {
-			makeslide(f, os.Stdout, title, subtitle, left, top, size, dsize)
+			makeslide(deck, f, os.Stdout, title, subtitle, left, top, size, dsize)
 		}
 	}
+	deck.EndDeck()
+
 }
 
 // makeside makes the slide deck
-func makeslide(f string, w io.Writer, title, subtitle string, left, top, size, dsize float64) {
+func makeslide(deck *generate.Deck, f string, w io.Writer, title, subtitle string, left, top, size, dsize float64) {
 	var data []distanceTable
 	var err error
 	var r io.Reader
@@ -59,14 +63,11 @@ func makeslide(f string, w io.Writer, title, subtitle string, left, top, size, d
 	if err != nil {
 		return
 	}
-	deck := generate.NewSlides(w, 0, 0)
-	deck.StartDeck()
 	deck.StartSlide()
 	deck.Text(40, 89, title, "sans", 3.5, "")
 	deck.TextBlock(40, 85, subtitle, "serif", 1.5, 50, "")
 	distable(deck, data, left, top, size, dsize)
 	deck.EndSlide()
-	deck.EndDeck()
 }
 
 // readtable reads in distance table data
