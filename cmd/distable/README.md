@@ -44,6 +44,8 @@ Options:
     	left margin (default 1)
   -size float
     	text size (default 1.1)
+  -dsize float
+  	  distance text size (default 0.65*size)
   -subtitle string
     	subtitle (default "distance in miles")
   -title string
