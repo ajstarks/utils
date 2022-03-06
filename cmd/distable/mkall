@@ -1,0 +1,17 @@
+#!/bin/sh
+mono="Charter-Italic"
+serif="Charter-Regular"
+sans="PublicSans-Regular"
+go build &&
+./distable -title 'Morris County, New Jersey' -subtitle 'showing the distance in miles and tenths on an airline from place to place' morris.d |
+pdfdeck -stdout -serif $serif -mono $mono -sans $sans - > morris.pdf
+
+./distable -title 'Distances between African Cities' -dsize 0.6  -subtitle 'travel time between African cities, kilometers' af-km.d |
+pdfdeck -stdout -serif $serif -mono $mono -sans $sans - > africa.pdf
+
+./distable -title 'Distances between US Cities' -dsize 0.6 -subtitle 'travel time between US cities, kilometers' us-cities-km.d |
+pdfdeck -stdout -serif $serif -mono $mono -sans $sans - > us-km.pdf
+
+./distable -title 'Distances between US Cities' -dsize 0.6 -subtitle 'travel time between US cities, kilometers' us-cities-miles.d |
+pdfdeck -stdout -serif $serif -mono $mono -sans $sans - > us-miles.pdf
+
