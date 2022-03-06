@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-// letterindex returns a number corresponding to the letter, or just the number
+// column returns a number corresponding to the letter, or just the number
 func column(s string) int {
 	if len(s) == 0 {
 		return 0
