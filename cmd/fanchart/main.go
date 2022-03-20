@@ -109,9 +109,13 @@ func endDeck() {
 }
 
 // legend makes a balanced left and right hand legend
-func legend(data []Measure, orientation string, rows int, ts float64) {
+func legend(data []Measure, orientation string, ts float64) {
 	var x, y, xoffset float64
-	left := rows
+	l := len(data)
+	h := l / 2
+	rem := l % 2
+	hr := h + rem
+
 	r := ts + 1.0
 	leading := ts * 6
 
@@ -125,7 +129,7 @@ func legend(data []Measure, orientation string, rows int, ts float64) {
 	}
 	// left/top legend
 	xoffset = 3
-	for i := 0; i < left; i++ {
+	for i := 0; i < hr; i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
 		legendlabel(label, x+xoffset, y, ts)
@@ -140,7 +144,7 @@ func legend(data []Measure, orientation string, rows int, ts float64) {
 	case "lr":
 		y = 25.0
 	}
-	for i := left; i < len(data); i++ {
+	for i := hr; i < len(data); i++ {
 		label := data[i].name
 		circle(x, y, r, data[i].color)
 		legendlabel(label, x+xoffset, y, ts)
@@ -349,7 +353,7 @@ func main() {
 		} else {
 			wings(data1, data2, midx, midy, arcsize, canvasWidth, canvasHeight)
 		}
-		legend(data1.measures, orientation, 3, labelsize)
+		legend(data1.measures, orientation, labelsize)
 		endSlide()
 	}
 	endDeck()
