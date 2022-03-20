@@ -111,8 +111,7 @@ func endDeck() {
 // legend makes a balanced left and right hand legend
 func legend(data []Measure, orientation string, rows int, ts float64) {
 	var x, y, xoffset float64
-	right := len(data) % rows
-	left := len(data) - right
+	left := rows
 	r := ts + 1.0
 	leading := ts * 6
 
