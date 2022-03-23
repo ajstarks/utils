@@ -1,0 +1,7 @@
+#!/bin/sh
+GOOS=windows GOARCH=amd64  go build -o binaries/fanchart-win64.exe
+GOOS=windows GOARCH=386    go build -o binaries/fanchart-win32.exe
+GOOS=darwin  GOARCH=amd64  go build -o binaries/fanchart-intel-mac
+GOOS=darwin  GOARCH=arm64  go build -o binaries/fanchart-arm-mac
+GOOS=linux   GOARCH=amd64  go build -o binaries/fanchart-linux
+
