@@ -28,10 +28,14 @@ func bezpoints(start, end, control point, npoints int) []point {
 }
 
 // showcurve generates the decksh code for the computed coordinates
-func showcurve(start, end, control point, n int, color string, opacity float64) {
+func showcurve(style string, start, end, control point, n int, color string, opacity float64) {
 	coordinates := bezpoints(start, end, control, n)
-	//fmt.Printf("curve %.3f %.3f %.3f %.3f %.3f %.3f 0.2 \"red\"\n", start.x, start.y, control.x, control.y, end.x, end.y)
-	fmt.Printf("polygon \"%.3f ", start.x)
+	lines := style == "l"
+	if lines {
+		fmt.Printf("polyline \"%.3f ", start.x)
+	} else {
+		fmt.Printf("polygon \"%.3f ", start.x)
+	}
 	for _, p := range coordinates {
 		fmt.Printf("%.3f ", p.x)
 	}
@@ -39,12 +43,16 @@ func showcurve(start, end, control point, n int, color string, opacity float64) 
 	for _, p := range coordinates {
 		fmt.Printf("%.3f ", p.y)
 	}
-	fmt.Printf("%.3f\" \"%s\" %g\n", end.y, color, opacity)
+	if lines {
+		fmt.Printf("%.3f\" %g \"%s\" %g\n", end.y, 0.2, color, opacity)
+	} else {
+		fmt.Printf("%.3f\" \"%s\" %g\n", end.y, color, opacity)
+	}
 }
 
 func main() {
 	var sx, sy, ex, ey, cx, cy, opacity float64
-	var color string
+	var style, color string
 	var npoints int
 
 	flag.Float64Var(&sx, "sx", 20, "start x")
@@ -56,10 +64,11 @@ func main() {
 	flag.IntVar(&npoints, "n", 100, "number of points")
 	flag.StringVar(&color, "color", "gray", "color")
 	flag.Float64Var(&opacity, "opacity", 50, "opacity")
+	flag.StringVar(&style, "style", "s", "object style")
 	flag.Parse()
 
 	start := point{sx, sy}
 	end := point{ex, ey}
 	control := point{cx, cy}
-	showcurve(start, end, control, npoints, color, opacity)
+	showcurve(style, start, end, control, npoints, color, opacity)
 }
