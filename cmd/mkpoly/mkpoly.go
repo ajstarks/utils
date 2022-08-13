@@ -22,8 +22,12 @@ type params struct {
 	label, color                                     string
 }
 
+type pfunc func(p params, s string)
+
 func main() {
 	var p params
+	var outstyle string
+
 	flag.Float64Var(&p.left, "left", 10, "left")
 	flag.Float64Var(&p.right, "right", 90, "right")
 	flag.Float64Var(&p.bottom, "bottom", 10, "bottom")
@@ -34,7 +38,13 @@ func main() {
 	flag.Float64Var(&p.maxy, "maxy", largest, "miny")
 	flag.StringVar(&p.color, "color", "gray", "color")
 	flag.StringVar(&p.label, "label", "", "label")
+	flag.StringVar(&outstyle, "style", "deck", "output style (deck or decksh")
 	flag.Parse()
+
+	process := deck
+	if outstyle == "decksh" {
+		process = decksh
+	}
 
 	for _, f := range flag.Args() {
 		if err := process(p, f); err != nil {
@@ -67,8 +77,56 @@ func readata(r io.Reader) ([]float64, []float64, error) {
 	return x, y, scanner.Err()
 }
 
+func deck(p params, filename string) error {
+	r, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("<!--", p.minx, p.maxx, p.miny, p.maxy, p.left, p.right, p.bottom, p.top, "-->")
+
+	x, y, err := readata(r)
+	if err != nil {
+		return err
+	}
+
+	pminx := largest
+	pmaxx := smallest
+	fmt.Printf("<polygon xc=\"")
+	for i := 0; i < len(x); i++ {
+		px := vmap(x[i], p.minx, p.maxx, p.left, p.right)
+		if px > pmaxx {
+			pmaxx = px
+		}
+		if px < pminx {
+			pminx = px
+		}
+		fmt.Printf("%.3g ", px)
+	}
+	fmt.Printf("%.3g\"", vmap(x[0], p.minx, p.maxx, p.left, p.right))
+
+	pminy := largest
+	pmaxy := smallest
+	fmt.Printf("  yc=\"")
+	for i := 0; i < len(y); i++ {
+		py := vmap(y[i], p.miny, p.maxy, p.bottom, p.top)
+		if py > pmaxy {
+			pmaxy = py
+		}
+		if py < pminy {
+			pminy = py
+		}
+		fmt.Printf("%.3g ", py)
+	}
+	fmt.Printf("%.3g\" color=\"%s\"/>\n", vmap(y[0], p.miny, p.maxy, p.bottom, p.top), p.color)
+	if len(p.label) > 0 {
+		fmt.Printf("<text align=\"c\" xp=\"%g\" yp=\"%g\" sp=\"1\"/>%s/>\n", pminx+((pmaxx-pminx)/2), pminy+((pmaxy-pminy)/2), p.label)
+	}
+	return r.Close()
+}
+
 // process data in the filename
-func process(p params, filename string) error {
+func decksh(p params, filename string) error {
 	r, err := os.Open(filename)
 	if err != nil {
 		return err
