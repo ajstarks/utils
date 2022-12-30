@@ -17,6 +17,7 @@
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * mkpoly - generate decksh polygons from x,y pairs
+* nythead - show New York Times headlines (API key required)
 * polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
 * svgcolor - lookup SVG named colors
