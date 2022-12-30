@@ -33,7 +33,7 @@ type result struct {
 }
 
 func main() {
-	var section = flag.String("h", "u.s.", "headline type (arts, health, sports, science, technology, u.s., world)")
+	var section = flag.String("s", "u.s.", "headline type (arts, health, sports, science, technology, u.s., world)")
 	flag.Parse()
 	nytheadlines(*section)
 }
