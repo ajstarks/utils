@@ -14,6 +14,7 @@
 * fstat - show file status
 * gitdate - visualize git commits over time
 * gurl - get URL
+* imgcat - make a image catalog with deck markup
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * mkpoly - generate decksh polygons from x,y pairs
