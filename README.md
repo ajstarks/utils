@@ -1,10 +1,13 @@
 # Useful commands
 
 * between - print the number of hours between two dates
+* bezpoints - compute the points along a bezier curve
 * c19chart - covid-19 charts
 * csvread - parse and display CSV files
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
+* deckle - make a deckled edge
+* dicechart - make Work-style dice charts
 * dict - lookup words via dictionary servers
 * distable - make a distance table
 * deckle - make deckled edges using deck markup
@@ -14,13 +17,17 @@
 * fstat - show file status
 * gitdate - visualize git commits over time
 * gurl - get URL
+* hsv2rgb - convert hsv to rgb colors
 * imgcat - make a image catalog with deck markup
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
+* mfunc - math functions
 * mkpoly - generate decksh polygons from x,y pairs
 * nythead - show New York Times headlines (API key required)
 * polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
+* setdeckfont - make default path for deckfonts
+* slopechart - make slope charts
 * svgcolor - lookup SVG named colors
 * swiss - make a clock based on the iconic Swiss Railway clock
 * utab - make PDF unicode tables using TrueType fonts

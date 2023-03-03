@@ -36,14 +36,14 @@ type config struct {
 const (
 	cw          = 792.0
 	ch          = 612.0
-	top         = 85.0
+	top         = 80.0
 	vskip       = 7.0
 	textsize    = 2.0
 	valuesize   = 2.0
 	labelx      = 10.0
 	datax       = 35.0
 	dicewidth   = 1.5
-	dotsize     = 1.0
+	dotsize     = 0.75
 	dicespacing = 5.0
 	dotcolor    = "black"
 	diceunit    = 5
