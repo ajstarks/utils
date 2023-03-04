@@ -67,6 +67,16 @@ func polar(cx, cy, r, theta, cw, ch float64) (float64, float64) {
 	return cx + (r * math.Cos(t)), cy + (ry * math.Sin(t))
 }
 
+// beginDeck starts a deck
+func beginDeck(w io.Writer) {
+	fmt.Fprintln(w, "<deck><slide>")
+}
+
+// endDeck ends a deck
+func endDeck(w io.Writer) {
+	fmt.Fprintln(w, "</slide></deck>")
+}
+
 // text renders text at specified location and size
 func text(w io.Writer, s string, x, y, size float64) {
 	fmt.Fprintf(w, "<text xp=\"%v\" yp=\"%v\" sp=\"%v\">%s</text>\n", x, y, size, xmlesc(s))
@@ -91,6 +101,9 @@ func readData(r io.Reader) []dicedata {
 		record, err := input.Read()
 		if err == io.EOF {
 			break
+		}
+		if len(record) != 2 {
+			continue
 		}
 		item.name = record[0]
 		item.value, _ = strconv.Atoi(record[1])
@@ -121,12 +134,12 @@ func dicerow(w io.Writer, d dicedata, cfg config, y float64) {
 	case 3, 4:
 		ns = cfg.dicespacing / 2
 	}
-	text(w, fmt.Sprintf("%d", d.value), xp+ns, ly, valuesize)
+	text(w, strconv.Itoa(d.value), xp+ns, ly, cfg.valuesize)
 }
 
-// make a dicechart
+// dicechart reads data and makes the chart
 func dicechart(w io.Writer, r io.Reader, cfg config) {
-	fmt.Fprintln(w, "<deck><slide>")
+	beginDeck(w)
 	data := readData(r)
 	if len(cfg.title) > 0 {
 		ctext(w, cfg.title, 50, cfg.top+(cfg.textsize*4), cfg.textsize*1.5)
@@ -136,7 +149,7 @@ func dicechart(w io.Writer, r io.Reader, cfg config) {
 		dicerow(w, d, cfg, y)
 		y -= cfg.vskip
 	}
-	fmt.Fprintln(w, "</slide></deck>")
+	endDeck(w)
 }
 
 // dice makes a one, two, three, four, or five dot die.
@@ -169,9 +182,9 @@ func dice(w io.Writer, x, y, r, size float64, n int, color string) {
 	}
 }
 
-func main() {
+// setup processes command line flags and sets where data is read from
+func setup() (config, io.Reader, error) {
 	var cfg config
-	var err error
 	flag.Float64Var(&cfg.cw, "width", cw, "canvas width")
 	flag.Float64Var(&cfg.ch, "height", ch, "canvas height")
 	flag.Float64Var(&cfg.top, "top", top, "top of the chart")
@@ -187,13 +200,19 @@ func main() {
 	flag.StringVar(&cfg.title, "title", "", "chart title")
 	flag.Parse()
 
-	w, r := os.Stdout, os.Stdin
+	var err error
+	r := os.Stdin
 	if len(flag.Args()) > 0 {
 		r, err = os.Open(flag.Arg(0))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			os.Exit(1)
-		}
 	}
-	dicechart(w, r, cfg)
+	return cfg, r, err
+}
+
+func main() {
+	cfg, r, err := setup()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+	dicechart(os.Stdout, r, cfg)
 }
