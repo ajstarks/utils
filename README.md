@@ -6,11 +6,10 @@
 * csvread - parse and display CSV files
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
-* deckle - make a deckled edge
+* deckle - make a deckled edge using deck markup
 * dicechart - make Work-style dice charts
 * dict - lookup words via dictionary servers
 * distable - make a distance table
-* deckle - make deckled edges using deck markup
 * dpi - compute dots per inch and aspect ratio
 * fanchart - make Dubois-style fan charts
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
