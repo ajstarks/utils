@@ -102,6 +102,10 @@ func readData(r io.Reader) []dicedata {
 		if err == io.EOF {
 			break
 		}
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			continue
+		}
 		if len(record) != 2 {
 			continue
 		}
@@ -139,8 +143,8 @@ func dicerow(w io.Writer, d dicedata, cfg config, y float64) {
 
 // dicechart reads data and makes the chart
 func dicechart(w io.Writer, r io.Reader, cfg config) {
-	beginDeck(w)
 	data := readData(r)
+	beginDeck(w)
 	if len(cfg.title) > 0 {
 		ctext(w, cfg.title, 50, cfg.top+(cfg.textsize*4), cfg.textsize*1.5)
 	}
