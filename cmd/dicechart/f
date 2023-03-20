@@ -1,0 +1,14 @@
+type config struct {
+	cw          float64
+	ch          float64
+	top         float64
+	vskip       float64
+	textsize    float64
+	valuesize   float64
+	labelx      float64
+	datax       float64
+	dicewidth   float64
+	dicespacing float64
+	dotsize     float64
+	dotcolor    string
+}

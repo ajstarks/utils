@@ -1,10 +1,15 @@
 # dicechart
 
+Make dicecharts in the style of [Monroe Work's "Negro Year Book"](https://nightingaledvs.com/monroe-nathan-work-education-in-the-negro-year-book/), using deck markup
+
 ![dicechart](dicechart.png)
 
 ## Usage
-dicechart [options] file.csv
-where file.csv is "label",value
+
+```dicechart [options] [file.csv]```
+
+where file.csv contains "label",value pairs
+
 for example:
 
 ```
@@ -18,8 +23,21 @@ for example:
 "SOUTH CAROLINA",26
 "LOUISIANA",23
 ```
+If no file is specified, input is from the standard input.  Output is always to standard output.
+Typical usage is to use pdfdeck to render the chart in pdf:
 
-options are:
+```
+$ dicechart data.csv > chart.xml
+$ pdfdeck chart.xml
+```
+
+or in a pipeline:
+
+```
+$ dicechart data.csv | pdfdeck -stdout - > chart.pdf
+```
+
+Command options are:
 ```
 
   -color string
@@ -42,6 +60,8 @@ options are:
     	chart title
   -top float
     	top of the chart (default 85)
+  -unit
+      dice unit (default 5)
   -valsize float
     	canvas width (default 2)
   -vskip float
