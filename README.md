@@ -20,6 +20,7 @@
 * imgcat - make a image catalog with deck markup
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
+* mdtopdf - markdown to PDF
 * mfunc - math functions
 * mkpoly - generate decksh polygons from x,y pairs
 * nythead - show New York Times headlines (API key required)
