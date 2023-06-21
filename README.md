@@ -3,6 +3,7 @@
 * between - print the number of hours between two dates
 * bezpoints - compute the points along a bezier curve
 * c19chart - covid-19 charts
+* cc - concentric circles
 * csvread - parse and display CSV files
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
