@@ -21,25 +21,25 @@ vspace="45" itemheight="40" fontname="Calibri" shape="r">
   </category>
   <category name="Network">
     <item begin="2010/2" duration="6">Install</item>
-    <item begin="2010/11" duration="2">Decomission</item>
+    <item begin="2010/9" duration="2">Decomission</item>
   </category>
   <category name="Servers">
     <item begin="2010/5" duration="3">Install</item>
-    <item begin="2010/11" duration="2">Decomission</item>
+    <item begin="2010/9" duration="2">Decomission<dep dest="gl"/></item>
   </category>
   <category name="Applications" vspace="45">
     <item begin="2010/1" duration="8">Develop</item>
     <item begin="2010/5" duration="4">Test</item>
-    <item begin="2010/9" duration="1">Data Migration</item>
+    <item id="dm" begin="2010/9" duration="1">Data Migration<dep dest="gl"/></item>
   </category>
   <category name="Data" vspace="0">
     <item begin="2010/1" duration="5">Migration planning</item>
   </category>
   <category name="Support">
-    <item begin="2010/1" duration="10">Transition</item>
+    <item begin="2010/1" duration="10">Transition<dep dest="gl"/></item>
   </category>
   <category name="EVENTS" shape="r">
-    <item begin="2010/6" duration="3" color="#729BBC">Freeze</item>
-    <item begin="2010/9" duration="1" color="#aa0000">Go Live</item>
+    <item begin="2010/6" duration="3" color="#729BBC" shape="a">Freeze</item>
+    <item id="gl" begin="2010/12" duration="1" color="#aa0000">Go Live</item>
   </category>
 </roadmap>
