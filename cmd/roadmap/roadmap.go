@@ -41,7 +41,7 @@ type Category struct {
 	Vspace     string  `xml:"vspace,attr"`
 	Itemheight string  `xml:"itemheight,attr"`
 	Shape      string  `xml:"shape,attr"`
-	Vline      string  `xml:"vline,attr"`
+	Bline      string  `xml:"bline,attr"`
 	Catdesc    Catdesc `xml:"catdesc"`
 	Item       []Item  `xml:"item"`
 }
@@ -241,7 +241,7 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 			canvas.Textlines(catx, ycatlabel, label, *cfs, *cfs+2, "black", *lalign)
 			canvas.Gend()
 		}
-		if cat.Vline == "on" {
+		if cat.Bline == "on" {
 			canvas.Line(itemMargin, y, rightMargin, y, borderfmt)
 		}
 
