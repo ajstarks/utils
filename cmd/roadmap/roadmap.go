@@ -113,7 +113,7 @@ const (
 	depfmt       = "stroke-width:2;stroke:%s;stroke-opacity:0.6;stroke-dasharray:2 2;fill:none"
 	ccfmt        = "stroke:none;fill:%s;fill-opacity:0.3"
 	connectfmt   = "stroke:none;text-anchor:middle;font-style:italic;fill:%s;font-size:60%%"
-	catdescfmt   = "text-anchor:start;fill:red;font-size:%.2f"
+	catdescfmt   = "text-anchor:start;fill:red;font-size:%.2fpx"
 	itemtextfmt  = "text-anchor:%s;fill:%s;font-size:%.2fpx"
 	itemlinefmt  = "stroke:%s;stroke-width:%.2fpx"
 	hexfillfmt   = "fill:%s;fill-opacity:%.2f"
