@@ -113,13 +113,14 @@ const (
 	depfmt       = "stroke-width:2;stroke:%s;stroke-opacity:0.6;stroke-dasharray:2 2;fill:none"
 	ccfmt        = "stroke:none;fill:%s;fill-opacity:0.3"
 	connectfmt   = "stroke:none;text-anchor:middle;font-style:italic;fill:%s;font-size:60%%"
-	catdescfmt   = "text-anchor:start;fill:red;font-size:%f"
-	itemtextfmt  = "text-anchor:%s;fill:%s;font-size:%fpx"
+	catdescfmt   = "text-anchor:start;fill:red;font-size:%.2f"
+	itemtextfmt  = "text-anchor:%s;fill:%s;font-size:%.2fpx"
+	itemlinefmt  = "stroke:%s;stroke-width:%.2fpx"
 	hexfillfmt   = "fill:%s;fill-opacity:%.2f"
 	boldfmt      = "font-weight:bold"
 	italicfmt    = "font-style:italic"
 	strokefmt    = "stroke:%s;%s"
-	categoryfmt  = "text-anchor:start;font-size:%fpx"
+	categoryfmt  = "text-anchor:start;font-size:%.2fpx"
 	catgstylefmt = "text-anchor:middle;font-family:"
 )
 
@@ -334,9 +335,9 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 
 			if len(item.Desc) > 0 {
 				if *descend {
-					textwrap(canvas, itemx+itemw, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "start", *descolor, 1.0)
+					textwrap(itemx+itemw, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "start", *descolor, 1.0, canvas)
 				} else {
-					textwrap(canvas, itemx-5, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "end", *descolor, 1.0)
+					textwrap(itemx-5, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "end", *descolor, 1.0, canvas)
 				}
 			}
 
@@ -414,7 +415,6 @@ func connect(item Item, d Dep, cats []Category, canvas *gensvg.SVG) {
 			}
 		}
 	}
-
 }
 
 // whitespace determines if a rune is whitespace
@@ -423,8 +423,8 @@ func whitespace(r rune) bool {
 }
 
 // textwrap draws text at location, wrapping at the specified width
-func textwrap(doc *gensvg.SVG, x, y, w, fs, leading float64, s, font, align, color string, opacity float64) {
-	doc.Gstyle(fmt.Sprintf(twrapfmt, align, opacity, color, font, fs))
+func textwrap(x, y, w, fs, leading float64, s, font, align, color string, opacity float64, canvas *gensvg.SVG) {
+	canvas.Gstyle(fmt.Sprintf(twrapfmt, align, opacity, color, font, fs))
 	words := strings.FieldsFunc(s, whitespace)
 	xp := x
 	yp := y
@@ -432,15 +432,15 @@ func textwrap(doc *gensvg.SVG, x, y, w, fs, leading float64, s, font, align, col
 	for _, s := range words {
 		line += s + " "
 		if float64(len(line)) > w {
-			doc.Text(xp, yp, line)
+			canvas.Text(xp, yp, line)
 			yp += leading
 			line = ""
 		}
 	}
 	if len(line) > 0 {
-		doc.Text(xp, yp, line)
+		canvas.Text(xp, yp, line)
 	}
-	doc.Gend()
+	canvas.Gend()
 }
 
 // drawitem renders roadmap items
@@ -465,7 +465,8 @@ func drawitem(s string, x, y, w, h float64, shape, color, align string, mileston
 		case "a":
 			arrow(x, y, w, h, h/2, fc, canvas)
 		case "l":
-			// canvas.Line(x, y, x+w, y)
+			yl := (y + (h / 2)) + ((*ifs / 4) - (*ifs / 3))
+			canvas.Line(x, yl, x+w, yl, fmt.Sprintf(itemlinefmt, color, *ifs))
 		default:
 			canvas.Rect(x, y, w, h, fc)
 		}

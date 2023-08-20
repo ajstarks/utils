@@ -27,7 +27,7 @@ Items may contains dependencies to other items.
 * vspace -- the default amount of vertical space between items within a category
 * itemheight -- the default height of an item
 * fontname -- font used for the text
-* shape -- default shape of an item: 'r': rectangle (default), 'rr': rounded rectangle, 'c': circle, 'e': ellipse, 'a': arrow
+* shape -- default shape of an item: 'r': rectangle (default), 'rr': rounded rectangle, 'c': circle, 'e': ellipse, 'a': arrow, 'l': line
 
 ## Category attributes
 * name -- the name of the category
