@@ -1,0 +1,97 @@
+<roadmap title="Du Bois SERVE (2023)" begin="2023" end="2024" scale="52" catpercent="20" vspace="50" itemheight="25">	
+    <category name="Week" vspace="0">
+	 	<item begin="2023/1" duration="1">1</item>
+        <item begin="2023/2" duration="1">2</item>
+        <item begin="2023/3" duration="1">3</item>
+        <item begin="2023/4" duration="1">4</item>
+        <item begin="2023/5" duration="1">5</item>
+        <item begin="2023/6" duration="1">6</item>
+        <item begin="2023/7" duration="1">7</item>
+        <item begin="2023/8" duration="1">8</item>
+        <item begin="2023/9" duration="1">9</item>
+        <item begin="2023/10" duration="1">10</item>
+        <item begin="2023/11" duration="1">11</item>
+        <item begin="2023/12" duration="1">12</item>
+        <item begin="2023/13" duration="1">13</item>
+        <item begin="2023/14" duration="1">14</item>
+        <item begin="2023/15" duration="1">15</item>
+        <item begin="2023/16" duration="1">16</item>
+        <item begin="2023/17" duration="1">17</item>
+        <item begin="2023/18" duration="1">18</item>
+        <item begin="2023/19" duration="1">19</item>
+        <item begin="2023/20" duration="1">20</item>
+        <item begin="2023/21" duration="1">21</item>
+        <item begin="2023/22" duration="1">22</item>
+        <item begin="2023/23" duration="1">23</item>
+        <item begin="2023/24" duration="1">24</item>
+        <item begin="2023/25" duration="1">25</item>
+        <item begin="2023/26" duration="1">26</item>
+        <item begin="2023/27" duration="1">27</item>
+        <item begin="2023/28" duration="1">28</item>
+        <item begin="2023/29" duration="1">29</item>
+        <item begin="2023/30" duration="1">30</item>
+        <item begin="2023/31" duration="1">31</item>
+        <item begin="2023/32" duration="1">32</item>
+        <item begin="2023/33" duration="1">33</item>
+        <item begin="2023/34" duration="1">34</item>
+        <item begin="2023/35" duration="1">35</item>
+        <item begin="2023/36" duration="1">36</item>
+        <item begin="2023/37" duration="1">37</item>
+        <item begin="2023/38" duration="1">38</item>
+        <item begin="2023/39" duration="1">39</item>
+        <item begin="2023/40" duration="1">40</item>
+        <item begin="2023/41" duration="1">41</item>
+        <item begin="2023/42" duration="1">42</item>
+        <item begin="2023/43" duration="1">43</item>
+        <item begin="2023/44" duration="1">44</item>
+        <item begin="2023/45" duration="1">45</item>
+        <item begin="2023/46" duration="1">46</item>
+        <item begin="2023/47" duration="1">47</item>
+        <item begin="2023/48" duration="1">48</item>
+        <item begin="2023/49" duration="1">49</item>
+        <item begin="2023/50" duration="1">50</item>
+        <item begin="2023/51" duration="1">51</item>
+        <item begin="2023/52" duration="1">52</item>
+    </category>
+
+    <category name="Month" vspace="0">
+        <item begin="2023/1" duration="5">JAN</item>
+        <item begin="2023/6" duration="4">FEB</item>
+        <item begin="2023/10" duration="4">MAR</item>
+        <item begin="2023/14" duration="5">APR</item>
+        <item begin="2023/19" duration="4">MAY</item>
+        <item begin="2023/23" duration="4">JUN</item>
+        <item begin="2023/27" duration="5">JUL</item>
+        <item begin="2023/32" duration="4">AUG</item>
+        <item begin="2023/36" duration="4">SEP</item>
+        <item begin="2023/40" duration="5">OCT</item>
+        <item begin="2023/45" duration="4">NOV</item>
+        <item begin="2023/49" duration="4">DEC</item>
+    </category>
+
+     <category name="" vspace="0"/>
+
+    <category name="FOCUS GROUP" vspace="50" color="#dc143cbb">
+    	<item id="sc" begin="2023/28" duration="2"><dep dest="si"/>Syllabi Collection</item>
+    </category>
+
+    <category name="FACULTY INSTITUTE" vspace="50">
+    </category>
+
+    <category name="STUDENT SURVEYS" vspace="50">
+    </category>
+
+    <category name="MODULE PRODUCTION"  vspace="30" color="#d2b48caa">
+    	<item id="si" begin="2023/31" duration="1">Syllabi analysis</item>
+    	<item id="mp" begin="2023/32" duration="3">Module prototypes</item>
+    </category>
+
+    <category name="MEETINGS" itemheight="0" vspace="20">
+    		<item begin="2023/30" duration="1" milestone="on">Online Joint Meeting</item>
+    		<item begin="2023/35" duration="1" milestone="on">Online Joint Meeting</item>
+    		<item begin="2023/39" duration="1" milestone="on">Online Joint Meeting</item>
+        	<item begin="2023/43" duration="1" milestone="on">Fisk Joint Meeting</item>
+     </category>
+
+
+</roadmap>

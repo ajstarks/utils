@@ -27,6 +27,7 @@
 * nythead - show New York Times headlines (API key required)
 * polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
+* roadmap - make planning roadmaps from an XML description
 * setdeckfont - make default path for deckfonts
 * slopechart - make slope charts
 * svgcolor - lookup SVG named colors
