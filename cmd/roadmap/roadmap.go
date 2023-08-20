@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	svg "github.com/ajstarks/svgo/float"
+	"github.com/ajstarks/gensvg"
 )
 
 // Geometry defines the dimensions of objects
@@ -108,13 +108,23 @@ var (
 )
 
 const (
-	borderfmt = "stroke:#BBBBBBCC;stroke-width:0.75px"
-	twrapfmt  = "font-style:italic;text-anchor:%s;fill-opacity:%.2f;fill:%s;font-family:%s;font-size:%fpx"
-	depfmt    = "stroke-width:2;stroke:%s;stroke-opacity:0.6;stroke-dasharray:2 2;fill:none"
+	borderfmt    = "stroke:#BBBBBBCC;stroke-width:0.75px"
+	twrapfmt     = "font-style:italic;text-anchor:%s;fill-opacity:%.2f;fill:%s;font-family:%s;font-size:%fpx"
+	depfmt       = "stroke-width:2;stroke:%s;stroke-opacity:0.6;stroke-dasharray:2 2;fill:none"
+	ccfmt        = "stroke:none;fill:%s;fill-opacity:0.3"
+	connectfmt   = "stroke:none;text-anchor:middle;font-style:italic;fill:%s;font-size:60%%"
+	catdescfmt   = "text-anchor:start;fill:red;font-size:%f"
+	itemtextfmt  = "text-anchor:%s;fill:%s;font-size:%fpx"
+	hexfillfmt   = "fill:%s;fill-opacity:%.2f"
+	boldfmt      = "font-weight:bold"
+	italicfmt    = "font-style:italic"
+	strokefmt    = "stroke:%s;%s"
+	categoryfmt  = "text-anchor:start;font-size:%fpx"
+	catgstylefmt = "text-anchor:middle;font-family:"
 )
 
 // roadmap reads and processes a roadmap XML file
-func roadmap(location string, canvas *svg.SVG) {
+func roadmap(location string, canvas *gensvg.SVG) {
 	var f *os.File
 	var err error
 	f = os.Stdin
@@ -130,7 +140,7 @@ func roadmap(location string, canvas *svg.SVG) {
 }
 
 // readrm reads in the roadmap struct
-func readrm(r io.Reader, canvas *svg.SVG) {
+func readrm(r io.Reader, canvas *gensvg.SVG) {
 	var rm Roadmap
 	err := xml.NewDecoder(r).Decode(&rm)
 	if err != nil {
@@ -164,7 +174,7 @@ func rmcsv(r Roadmap, w io.Writer) {
 }
 
 // readrm reads in the roadmap struct
-func drawrm(r Roadmap, canvas *svg.SVG) {
+func drawrm(r Roadmap, canvas *gensvg.SVG) {
 	var (
 		itemshape = "r"
 		itemalign = "middle"
@@ -185,8 +195,8 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 		fontname = r.Fontname
 	}
 
-	itemMargin = float64(float64(*width) * (float64(r.Catpercent) / 100.0))
-	rightMargin = float64(float64(*width) * 0.98)
+	itemMargin = *width * (r.Catpercent / 100.0)
+	rightMargin = *width * 0.98
 	tloc := 30.0    // int(float(*height) * 0.05)
 	top = tloc + 10 // int(float(*height) * 0.10)
 	y := top
@@ -202,8 +212,8 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 	canvas.Title(r.Title)
 	canvas.Rect(0, 0, *width, *height, "fill:"+*bgcolor)
 
-	canvas.Gstyle("text-anchor:middle;font-family:" + fontname)
-	canvas.Text(itemMargin, tloc, r.Title, fmt.Sprintf("text-anchor:start;font-size:%fpx", *tfs))
+	canvas.Gstyle(catgstylefmt + fontname)
+	canvas.Text(itemMargin, tloc, r.Title, fmt.Sprintf(categoryfmt, *tfs))
 
 	// Process Categories
 	for cc, cat := range r.Category {
@@ -218,9 +228,9 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 			label := strings.Split(cat.Name, "\\n")
 			ll := len(label)
 			if *boldcat {
-				canvas.Gstyle("font-weight:bold")
+				canvas.Gstyle(boldfmt)
 			} else {
-				canvas.Gstyle("font-style:italic")
+				canvas.Gstyle(italicfmt)
 			}
 
 			if ll <= 1 {
@@ -237,7 +247,7 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 
 		// Process Category descriptions
 		yd := ycatlabel + *cfs
-		canvas.Gstyle(fmt.Sprintf("text-anchor:start;fill:red;font-size:%f", *ifs))
+		canvas.Gstyle(fmt.Sprintf(catdescfmt, *ifs))
 		for _, cdi := range cat.Catdesc.Cditem {
 			canvas.Text(*lmargin, yd, cdi.Cdtext)
 			yd += *cfs + 2
@@ -295,9 +305,9 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 				yearscale = 1.0
 			}
 
-			itemfraction := float64(itempart-1) / float64(yearscale)
-			itemx := fmap(float64(itemyear)+itemfraction, float64(beginyear), float64(endyear), float64(itemMargin), float64(rightMargin))
-			itemw := fmap(float64(itemduration), 0, float64(endyear-beginyear)*float64(yearscale), 0, float64(rightMargin-itemMargin))
+			itemfraction := (itempart - 1) / yearscale
+			itemx := fmap(itemyear+itemfraction, beginyear, endyear, itemMargin, rightMargin)
+			itemw := fmap(itemduration, 0, (endyear-beginyear)*yearscale, 0, rightMargin-itemMargin)
 
 			if len(cat.Shape) == 0 {
 				itemshape = r.Shape
@@ -320,20 +330,20 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 			if len(item.Vspace) > 0 {
 				itemvspace, _ = strconv.ParseFloat(item.Vspace, 64)
 			}
-			drawitem(item.Text, float64(itemx), y, float64(itemw), itemheight, itemshape, itemcolor, itemalign, milestone, bline, canvas)
+			drawitem(item.Text, itemx, y, itemw, itemheight, itemshape, itemcolor, itemalign, milestone, bline, canvas)
 
 			if len(item.Desc) > 0 {
 				if *descend {
-					textwrap(canvas, float64(itemx)+float64(itemw), y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "start", *descolor, 1.0)
+					textwrap(canvas, itemx+itemw, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "start", *descolor, 1.0)
 				} else {
-					textwrap(canvas, float64(itemx)-5, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "end", *descolor, 1.0)
+					textwrap(canvas, itemx-5, y+*ifs, *twrap, *ifs, *ifs+2, item.Desc, fontname, "end", *descolor, 1.0)
 				}
 			}
 
 			geo := &r.Category[cc].Item[ii]
-			geo.X = float64(itemx)
+			geo.X = itemx
 			geo.Y = y
-			geo.W = float64(itemw)
+			geo.W = itemw
 			geo.H = itemheight
 
 			if ii < len(cat.Item)-1 {
@@ -358,7 +368,7 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 	for _, c := range r.Category {
 		for _, i := range c.Item {
 			for _, d := range i.Dep {
-				connect(canvas, i, d, r.Category)
+				connect(i, d, r.Category, canvas)
 			}
 		}
 	}
@@ -382,33 +392,29 @@ func drawrm(r Roadmap, canvas *svg.SVG) {
 }
 
 // connect matches destinations to make connections
-func connect(canvas *svg.SVG, item Item, d Dep, cats []Category) {
+func connect(item Item, d Dep, cats []Category, canvas *gensvg.SVG) {
 	var curvex, curvey float64
 	fmt.Sscanf(*curves, "%d,%d", &curvex, &curvey)
 
 	for _, c := range cats {
 		for _, i := range c.Item {
 			if (d.Dest == i.Id) && len(d.Dest) > 0 {
-				bx := item.X + float64(float64(item.W)*d.BPct)
+				bx := item.X + item.W*d.BPct
 				by := item.Y + item.H/2
-				ex := i.X + float64(float64(i.W)*d.EPct)
+				ex := i.X + i.W*d.EPct
 				ey := i.Y + i.H/2
 				cx := ex + curvex
 				cy := ey + curvey
 				canvas.Qbez(bx, by, cx, cy, ex, ey)
-				canvas.Circle(ex, ey, 4, fmt.Sprintf("stroke:none;fill:%s;fill-opacity:0.3", *concolor))
+				canvas.Circle(ex, ey, 4, fmt.Sprintf(ccfmt, *concolor))
 				if len(d.Desc) > 0 {
 					canvas.Text(ex, ey+item.H+5, d.Desc,
-						fmt.Sprintf("stroke:none;text-anchor:middle;font-style:italic;fill:%s;font-size:60%%", *descolor))
+						fmt.Sprintf(connectfmt, *descolor))
 				}
 			}
 		}
 	}
 
-}
-
-func debug(d interface{}) {
-	fmt.Fprintf(os.Stderr, "%v\n", d)
 }
 
 // whitespace determines if a rune is whitespace
@@ -417,7 +423,7 @@ func whitespace(r rune) bool {
 }
 
 // textwrap draws text at location, wrapping at the specified width
-func textwrap(doc *svg.SVG, x, y, w, fs float64, leading float64, s, font, align, color string, opacity float64) {
+func textwrap(doc *gensvg.SVG, x, y, w, fs, leading float64, s, font, align, color string, opacity float64) {
 	doc.Gstyle(fmt.Sprintf(twrapfmt, align, opacity, color, font, fs))
 	words := strings.FieldsFunc(s, whitespace)
 	xp := x
@@ -438,9 +444,9 @@ func textwrap(doc *svg.SVG, x, y, w, fs float64, leading float64, s, font, align
 }
 
 // drawitem renders roadmap items
-func drawitem(s string, x float64, y float64, w float64, h float64, shape string, color string, align string, milestone bool, bline bool, canvas *svg.SVG) {
+func drawitem(s string, x, y, w, h float64, shape, color, align string, milestone, bline bool, canvas *gensvg.SVG) {
 	var textfill string
-	fc := fmt.Sprintf("stroke:%s;%s", *bgcolor, hexstyle(color))
+	fc := fmt.Sprintf(strokefmt, *bgcolor, hexstyle(color))
 
 	if bline {
 		canvas.Line(x+w, y, x+w, *height, borderfmt)
@@ -490,13 +496,12 @@ func drawitem(s string, x float64, y float64, w float64, h float64, shape string
 	default:
 		tx += (w / 2)
 	}
-	// canvas.Text(tx, y+(h/2), s, fmt.Sprintf("baseline-shift:-25%%;text-anchor:%s;fill:%s;font-size:%dpx", align, textfill, *ifs))
-	canvas.Text(tx, (y+(h/2))+(*ifs/4), s, fmt.Sprintf("text-anchor:%s;fill:%s;font-size:%fpx", align, textfill, *ifs))
+	canvas.Text(tx, (y+(h/2))+(*ifs/4), s, fmt.Sprintf(itemtextfmt, align, textfill, *ifs))
 
 }
 
 // arrow makes an arrow shape
-func arrow(x float64, y float64, w float64, h float64, ah float64, color string, canvas *svg.SVG) {
+func arrow(x float64, y float64, w float64, h float64, ah float64, color string, canvas *gensvg.SVG) {
 	end := x + w
 	bot := y + h
 	ap := end - ah
@@ -506,9 +511,7 @@ func arrow(x float64, y float64, w float64, h float64, ah float64, color string,
 }
 
 // rgbtohsb converts an RGB triple to HSB
-func rgbtohsb(r float64, g float64, b float64) (hue, sat, bright float64) {
-	red, green, blue := float64(r), float64(g), float64(b)
-
+func rgbtohsb(red float64, green float64, blue float64) (hue, sat, bright float64) {
 	hue = 0.0
 	minRGB := math.Min(math.Min(red, green), blue)
 	maxRGB := math.Max(math.Max(red, green), blue)
@@ -547,13 +550,13 @@ func hexstyle(s string) string {
 		o, err := hex.DecodeString(s[7:9])
 		if err == nil {
 			op := float64(o[0]) / 255.0
-			return fmt.Sprintf("fill:%s;fill-opacity:%.2f", s[0:7], op)
+			return fmt.Sprintf(hexfillfmt, s[0:7], op)
 		}
 	}
 	return "fill:" + s
 }
 
-// colorcomp ...
+// colorcomp converts a hex string to red, green, blue
 func colorcomp(s string) (red, green, blue, alpha float64) {
 	if len(s) < 7 && s[0:0] != "#" {
 		return red, green, blue, alpha
@@ -576,7 +579,7 @@ func colorcomp(s string) (red, green, blue, alpha float64) {
 }
 
 // wordstack takes a slice of string into a stack of words
-func wordstack(canvas *svg.SVG, x, y, fs float64, s []string, style string) {
+func wordstack(x, y, fs float64, s []string, style string, canvas *gensvg.SVG) {
 	ls := fs + (fs / 2)
 	y -= ls
 	for i := len(s); i > 0; i-- {
@@ -586,12 +589,12 @@ func wordstack(canvas *svg.SVG, x, y, fs float64, s []string, style string) {
 }
 
 // fmap maps ranges
-func fmap(value float64, low1 float64, high1 float64, low2 float64, high2 float64) float64 {
+func fmap(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }
 
 func main() {
-	canvas := svg.New(os.Stdout)
+	canvas := gensvg.New(os.Stdout)
 	flag.Parse()
 	if len(flag.Args()) > 0 {
 		for _, f := range flag.Args() {
