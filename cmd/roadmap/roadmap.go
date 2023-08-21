@@ -124,16 +124,19 @@ const (
 	catgstylefmt = "text-anchor:middle;font-family:"
 )
 
-// main: process roadmap files on the command line, use stdin if no files specified.
+// main: process roadmap files on the command line,
+// use stdin if no files specified.
 func main() {
-	canvas := gensvg.New(os.Stdout)
 	flag.Parse()
-	if len(flag.Args()) > 0 {
-		for _, f := range flag.Args() {
-			roadmap(f, canvas)
-		}
-	} else {
+	files := flag.Args()
+	nf := len(files)
+	canvas := gensvg.New(os.Stdout)
+	if nf == 0 {
 		roadmap("", canvas)
+		return
+	}
+	for i := 0; i < nf; i++ {
+		roadmap(files[i], canvas)
 	}
 }
 
