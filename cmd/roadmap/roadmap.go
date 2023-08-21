@@ -108,7 +108,7 @@ var (
 )
 
 const (
-	borderfmt    = "stroke:#BBBBBBCC;stroke-width:0.75px"
+	borderfmt    = "stroke:#BBBBBB;stroke-width:0.75px"
 	twrapfmt     = "font-style:italic;text-anchor:%s;fill-opacity:%.2f;fill:%s;font-family:%s;font-size:%fpx"
 	depfmt       = "stroke-width:2;stroke:%s;stroke-opacity:0.6;stroke-dasharray:2 2;fill:none"
 	ccfmt        = "stroke:none;fill:%s;fill-opacity:0.3"
@@ -123,6 +123,19 @@ const (
 	categoryfmt  = "text-anchor:start;font-size:%.2fpx"
 	catgstylefmt = "text-anchor:middle;font-family:"
 )
+
+// main: process roadmap files on the command line, use stdin if no files specified.
+func main() {
+	canvas := gensvg.New(os.Stdout)
+	flag.Parse()
+	if len(flag.Args()) > 0 {
+		for _, f := range flag.Args() {
+			roadmap(f, canvas)
+		}
+	} else {
+		roadmap("", canvas)
+	}
+}
 
 // roadmap reads and processes a roadmap XML file
 func roadmap(location string, canvas *gensvg.SVG) {
@@ -164,13 +177,13 @@ func readrm(r io.Reader, canvas *gensvg.SVG) {
 func rmcsv(r Roadmap, w io.Writer) {
 	fmt.Fprintln(w, "\"Category/Item\",Begin,Duration,Id,Connection")
 	for _, cat := range r.Category {
-		if cat.Vspace == "0" {
+		if cat.Vspace == "0" { // skip header categories
 			continue
 		}
-		fmt.Fprintf(w, ",,,,\n\"%s\",,,,\n", cat.Name)
+		fmt.Fprintf(w, ",,,,\n\"%s\",,,,\n", cat.Name) // category name, flanked by empty rows
 		for _, item := range cat.Item {
 			fmt.Fprintf(w, "\"%s\",%s,%s,%s", item.Text, item.Begin, item.Duration, item.Id)
-			if len(item.Dep) > 0 {
+			if len(item.Dep) > 0 { // process deps
 				for _, d := range item.Dep {
 					fmt.Fprintf(w, ",%s", d.Dest)
 				}
@@ -385,6 +398,7 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 
 	canvas.Gend()
 
+	// borders
 	if *leftborder {
 		canvas.Line(itemMargin, top, itemMargin, *height, borderfmt)
 	}
@@ -600,16 +614,4 @@ func wordstack(x, y, fs float64, s []string, style string, canvas *gensvg.SVG) {
 // fmap maps ranges
 func fmap(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
-}
-
-func main() {
-	canvas := gensvg.New(os.Stdout)
-	flag.Parse()
-	if len(flag.Args()) > 0 {
-		for _, f := range flag.Args() {
-			roadmap(f, canvas)
-		}
-	} else {
-		roadmap("", canvas)
-	}
 }
