@@ -162,14 +162,22 @@ func readrm(r io.Reader, canvas *gensvg.SVG) {
 
 // rmcsv renders the roadmap data as CSV
 func rmcsv(r Roadmap, w io.Writer) {
-	fmt.Fprintln(w, "\"Category/Item\",Begin,Duration,Id")
+	fmt.Fprintln(w, "\"Category/Item\",Begin,Duration,Id,Connection")
 	for _, cat := range r.Category {
 		if cat.Vspace == "0" {
 			continue
 		}
-		fmt.Fprintf(w, ",,,\n\"%s\",,,\n", cat.Name)
+		fmt.Fprintf(w, ",,,,\n\"%s\",,,,\n", cat.Name)
 		for _, item := range cat.Item {
-			fmt.Fprintf(w, "\"%s\",%s,%s,%s\n", item.Text, item.Begin, item.Duration, item.Id)
+			fmt.Fprintf(w, "\"%s\",%s,%s,%s", item.Text, item.Begin, item.Duration, item.Id)
+			if len(item.Dep) > 0 {
+				for _, d := range item.Dep {
+					fmt.Fprintf(w, ",%s", d.Dest)
+				}
+				fmt.Fprintf(w, "\n")
+			} else {
+				fmt.Fprintf(w, ",\n")
+			}
 		}
 	}
 }
