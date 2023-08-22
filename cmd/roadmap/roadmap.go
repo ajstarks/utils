@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/hex"
 	"encoding/xml"
 	"flag"
@@ -39,7 +40,7 @@ type Category struct {
 	Name       string  `xml:"name,attr"`
 	Color      string  `xml:"color,attr"`
 	Vspace     string  `xml:"vspace,attr"`
-	Itemheight string  `xml:"itemheight,attr"`
+	Itemheight float64 `xml:"itemheight,attr"`
 	Shape      string  `xml:"shape,attr"`
 	Bline      string  `xml:"bline,attr"`
 	Catdesc    Catdesc `xml:"catdesc"`
@@ -65,18 +66,18 @@ type Dep struct {
 
 // Item defines items within categories
 type Item struct {
-	Id        string `xml:"id,attr"`
-	Begin     string `xml:"begin,attr"`
-	Duration  string `xml:"duration,attr"`
-	Color     string `xml:"color,attr"`
-	Milestone string `xml:"milestone,attr"`
-	Shape     string `xml:"shape,attr"`
-	Align     string `xml:"align,attr"`
-	Vspace    string `xml:"vspace,attr"`
-	Bline     string `xml:"bline,attr"`
-	Text      string `xml:",chardata"`
-	Dep       []Dep  `xml:"dep"`
-	Desc      string `xml:"desc"`
+	Id        string  `xml:"id,attr"`
+	Begin     string  `xml:"begin,attr"`
+	Duration  string  `xml:"duration,attr"`
+	Color     string  `xml:"color,attr"`
+	Milestone string  `xml:"milestone,attr"`
+	Shape     string  `xml:"shape,attr"`
+	Align     string  `xml:"align,attr"`
+	Vspace    float64 `xml:"vspace,attr"`
+	Bline     string  `xml:"bline,attr"`
+	Text      string  `xml:",chardata"`
+	Dep       []Dep   `xml:"dep"`
+	Desc      string  `xml:"desc"`
 	X         float64
 	Y         float64
 	W         float64
@@ -100,9 +101,11 @@ var (
 	catborder   = flag.Bool("cb", false, "category border")
 	boldcat     = flag.Bool("b", false, "bold categories")
 	descend     = flag.Bool("de", true, "description at the end of the item")
+	inputformat = flag.String("format", "xml", "input format")
 	bgcolor     = flag.String("bg", "white", "background color")
 	curves      = flag.String("curves", "0,0", "curve line connections")
-	csv         = flag.String("csv", "", "write CSV to specified file")
+	csvparam    = flag.String("csvparam", "", "parameters for CSV read (title,begin,end)")
+	csvout      = flag.String("csv", "", "write CSV to specified file")
 	descolor    = flag.String("dc", "red", "description color")
 	concolor    = flag.String("cc", "red", "connection color")
 )
@@ -159,14 +162,19 @@ func roadmap(location string, canvas *gensvg.SVG) {
 // readrm reads in the roadmap struct
 func readrm(r io.Reader, canvas *gensvg.SVG) {
 	var rm Roadmap
-	err := xml.NewDecoder(r).Decode(&rm)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		return
+	switch *inputformat {
+	case "xml":
+		err := xml.NewDecoder(r).Decode(&rm)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			return
+		}
+	case "csv":
+		rm = readCSV(r)
 	}
 	drawrm(rm, canvas)
-	if len(*csv) > 0 {
-		csvfile, err := os.Create(*csv)
+	if len(*csvout) > 0 {
+		csvfile, err := os.Create(*csvout)
 		if err != err {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			return
@@ -194,6 +202,82 @@ func rmcsv(r Roadmap, w io.Writer) {
 			} else {
 				fmt.Fprintf(w, ",\n")
 			}
+		}
+	}
+}
+
+// readcsv reads a CSV version of a roadmap
+func readCSV(r io.Reader) Roadmap {
+	var (
+		cats  []Category
+		c     Category
+		it    Item
+		items []Item
+		rm    Roadmap
+	)
+
+	nc := -1
+	nr := 0
+	input := csv.NewReader(r)
+	for {
+		fields, csverr := input.Read()
+		if csverr == io.EOF {
+			break
+		}
+		if csverr != nil {
+			fmt.Fprintf(os.Stderr, "%v %v\n", csverr, fields)
+			continue
+		}
+		nr++
+		if nr == 1 {
+			continue
+		}
+		if len(fields) < 5 {
+			continue
+		}
+		if len(fields[0]) == 0 {
+			continue
+		}
+		if len(fields[0]) > 0 && len(fields[1]) == 0 && len(fields[2]) == 0 {
+			nc++
+			c.Name = fields[0]
+			c.Vspace = "45"
+			c.Itemheight = 40
+			cats = append(cats, c)
+			items = []Item{}
+			continue
+		}
+		it.Text = fields[0]
+		it.Begin = fields[1]
+		it.Duration = fields[2]
+		items = append(items, it)
+		cats[nc].Item = items
+	}
+	rp := strings.Split(*csvparam, ",")
+	if len(rp) == 3 {
+		rm.Title = rp[0]
+		rm.Begin, _ = strconv.ParseFloat(rp[1], 64)
+		rm.End, _ = strconv.ParseFloat(rp[2], 64)
+	}
+	rm.Scale = 12
+	rm.Catpercent = 15
+	rm.Vspace = 45
+	rm.Itemheight = 40
+	rm.Shape = "r"
+	rm.Fontname = "Calibri,sans-serif"
+	rm.Category = cats
+	dumprm(rm, os.Stderr)
+	return rm
+}
+
+// dumprm prints out the roadmap struct
+func dumprm(r Roadmap, w io.Writer) {
+	fmt.Fprintf(w, "title=%q begin=%v end=%v scale=%v catpercent=%v vspace=%v font=%v itemh=%v, shape=%q\n",
+		r.Title, r.Begin, r.End, r.Scale, r.Catpercent, r.Vspace, r.Fontname, r.Itemheight, r.Shape)
+	for _, cat := range r.Category {
+		fmt.Fprintf(w, "\tname=%q vspace=%v itemheight=%v color=%v\n", cat.Name, cat.Vspace, cat.Itemheight, cat.Color)
+		for _, item := range cat.Item {
+			fmt.Fprintf(w, "\t\ttext=%q, begin=%q duration=%v vspace=%v\n", item.Text, item.Begin, item.Duration, item.Vspace)
 		}
 	}
 }
@@ -242,10 +326,10 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 
 	// Process Categories
 	for cc, cat := range r.Category {
-		if len(cat.Itemheight) == 0 {
+		if cat.Itemheight == 0 {
 			catheight = ritemheight
 		} else {
-			catheight, _ = strconv.ParseFloat(cat.Itemheight, 64)
+			catheight = cat.Itemheight
 		}
 
 		var ycatlabel float64
@@ -342,7 +426,7 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 			if len(item.Shape) > 0 {
 				itemshape = item.Shape
 			}
-			if len(cat.Itemheight) == 0 {
+			if cat.Itemheight == 0 {
 				itemheight = ritemheight
 			} else {
 				itemheight = catheight
@@ -352,8 +436,8 @@ func drawrm(r Roadmap, canvas *gensvg.SVG) {
 			} else {
 				itemvspace = cvspace
 			}
-			if len(item.Vspace) > 0 {
-				itemvspace, _ = strconv.ParseFloat(item.Vspace, 64)
+			if item.Vspace > 0 {
+				itemvspace = item.Vspace
 			}
 			drawitem(item.Text, itemx, y, itemw, itemheight, itemshape, itemcolor, itemalign, milestone, bline, canvas)
 
