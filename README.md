@@ -5,6 +5,7 @@
 * c19chart - covid-19 charts
 * cc - concentric circles
 * csvread - parse and display CSV files
+
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
 * deckle - make a deckled edge using deck markup
@@ -27,6 +28,7 @@
 * nythead - show New York Times headlines (API key required)
 * polar - return Cartesion coordinates from polar coordinate parameters
 * randgen - generate random numbers
+* rmcsv - convert roadmap CSV files to XML
 * roadmap - make planning roadmaps from an XML description
 * setdeckfont - make default path for deckfonts
 * slopechart - make slope charts
