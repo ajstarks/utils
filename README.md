@@ -13,6 +13,7 @@
 * dict - lookup words via dictionary servers
 * distable - make a distance table
 * dpi - compute dots per inch and aspect ratio
+* dotspiral - make a dot spiral
 * fanchart - make Dubois-style fan charts
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fstat - show file status
