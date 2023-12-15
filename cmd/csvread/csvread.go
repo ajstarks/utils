@@ -54,10 +54,14 @@ func output(s []string, w *csv.Writer, plain bool) {
 func main() {
 	var plainout = flag.Bool("plain", true, "plain output")
 	var headskip = flag.Bool("headskip", false, "skip the first record (header)")
+	var varfields = flag.Bool("varfields", true, "variable fields")
 	var err error
 	var data []string
 	flag.Parse()
 	r := csv.NewReader(os.Stdin)
+	if *varfields {
+		r.FieldsPerRecord = -1
+	}
 	w := csv.NewWriter(os.Stdout)
 	r.LazyQuotes = true
 	r.TrailingComma = true
