@@ -23,6 +23,7 @@
 * imgcat - make a image catalog with deck markup
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
+* latlongdeck - convert lat/long coordinates to deck/decksh markup
 * mdtopdf - markdown to PDF
 * mfunc - math functions
 * mkpoly - generate decksh polygons from x,y pairs
