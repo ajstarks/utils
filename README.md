@@ -17,13 +17,13 @@
 * fanchart - make Dubois-style fan charts
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fstat - show file status
+* geodeck - convert lat/long coordinates to deck/decksh markup
 * gitdate - visualize git commits over time
 * gurl - get URL
 * hsv2rgb - convert hsv to rgb colors
 * imgcat - make a image catalog with deck markup
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
-* latlongdeck - convert lat/long coordinates to deck/decksh markup
 * mdtopdf - markdown to PDF
 * mfunc - math functions
 * mkpoly - generate decksh polygons from x,y pairs
