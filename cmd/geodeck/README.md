@@ -45,7 +45,7 @@ Usage of geodeck:
   -color string
     	line color (default "black")
   -fulldeck
-    	make a full deck (default true)
+    	make a full deck (default false)
   -info
     	only report bounding box, center, and extremes
   -latmax float

@@ -44,11 +44,11 @@ func readData(r io.Reader) ([]float64, []float64, error) {
 		if len(f) != 2 {
 			continue
 		}
-		xp, err := strconv.ParseFloat(f[1], 64) // latitude
+		xp, err := strconv.ParseFloat(f[1], 64) // long
 		if err != nil {
 			continue
 		}
-		yp, err := strconv.ParseFloat(f[0], 64) // longitude
+		yp, err := strconv.ParseFloat(f[0], 64) // lat
 		if err != nil {
 			continue
 		}
@@ -84,7 +84,7 @@ func bboxData(x, y []float64) (float64, float64, float64, float64) {
 }
 
 // process input and options, making markup
-func process(filename string, c config, mapgeo kml.Geometry) {
+func process(filename string, dest io.Writer, c config, mapgeo kml.Geometry) {
 
 	// read from stdin by default, if specified, open a file
 	r := os.Stdin
@@ -117,6 +117,15 @@ func process(filename string, c config, mapgeo kml.Geometry) {
 	if c.autobbox {
 		mapgeo.Longmin, mapgeo.Longmax, mapgeo.Latmin, mapgeo.Latmax = bboxData(x, y)
 	}
+	// add slide markup, if specified
+	if c.fulldeck {
+		fmt.Fprintln(dest, "// "+filename)
+		if c.bgcolor != "" {
+			fmt.Fprintln(os.Stdout, "slide \""+c.bgcolor+"\"")
+		} else {
+			fmt.Fprintln(dest, "slide")
+		}
+	}
 	// draw a bounding box, if specified
 	if len(c.bbox) > 0 {
 		kml.BoundingBox(mapgeo, c.bbox, c.style)
@@ -124,6 +133,10 @@ func process(filename string, c config, mapgeo kml.Geometry) {
 	// map to deck canvas, make the drawing
 	x, y = mapData(x, y, mapgeo)
 	kml.Deckshape(c.shape, c.style, x, y, c.linewidth, c.color, mapgeo)
+	// end the slide, if specified
+	if c.fulldeck {
+		fmt.Fprintln(dest, "eslide")
+	}
 
 }
 
@@ -147,30 +160,31 @@ func main() {
 	flag.StringVar(&cfg.color, "color", "black", "line color")
 	flag.StringVar(&cfg.bbox, "bbox", "", "bounding box color (\"\" no box)")
 	flag.StringVar(&cfg.shape, "shape", "polyline", "polygon, polyline")
-	flag.StringVar(&cfg.style, "style", "deck", "deck, decksh, plain")
+	flag.StringVar(&cfg.style, "style", "decksh", "deck, decksh, plain")
 	flag.StringVar(&cfg.bgcolor, "bgcolor", "", "background color")
-	flag.BoolVar(&cfg.fulldeck, "fulldeck", true, "make a full deck")
+	flag.BoolVar(&cfg.fulldeck, "fulldeck", false, "make a full deck")
 
 	flag.Parse()
 
+	dest := os.Stdout
 	// don't do any generation if info only
 	if cfg.info {
 		cfg.fulldeck = false
 	}
-	// add deck/slide markup, if specified
+	// add deck markup, if specified
 	if cfg.fulldeck {
-		kml.Deckshbegin(cfg.bgcolor)
+		fmt.Fprintln(dest, "deck")
 	}
 	// for every file (or stdin if no files are specified), make markup
 	if len(flag.Args()) == 0 {
-		process("", cfg, mapgeo)
+		process("", dest, cfg, mapgeo)
 	} else {
 		for _, filename := range flag.Args() {
-			process(filename, cfg, mapgeo)
+			process(filename, dest, cfg, mapgeo)
 		}
 	}
-	// end the deck, if specified
 	if cfg.fulldeck {
-		kml.Deckshend()
+		fmt.Fprintln(dest, "edeck")
 	}
+
 }
