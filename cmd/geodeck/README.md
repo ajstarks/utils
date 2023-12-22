@@ -25,11 +25,19 @@ $ geodeck --info path.coord
 --center=40.6291415,-74.4224255 -bbox="40.636468,-74.4292|40.621815,-74.415651" --longmin=-74.4292 --longmax=-74.415651 --latmin=40.621815 --latmax=40.636468
 ```
 
+By default, the bounding box is determined from the input data, to override, turn off autobbox, and specify the bounding box directly.
+
+```
+$ geodeck -autobbox=f --longmin=-74.4292 --longmax=-74.415651 --latmin=40.621815 --latmax=40.636468
+```
+
 ## Options
 
 ```
 $ geodeck --help
 Usage of geodeck:
+  -autobbox
+      autoscale according to input values (default true)
   -bbox string
     	bounding box color ("" no box)
   -bgcolor string

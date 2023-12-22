@@ -12,13 +12,29 @@ import (
 	"github.com/ajstarks/kml"
 )
 
+// config: a bag of configuration options
+type config struct {
+	fulldeck, info, autobbox           bool
+	linewidth                          float64
+	color, bbox, shape, bgcolor, style string
+}
+
 // vmap maps one interval to another
 func vmap(value float64, low1 float64, high1 float64, low2 float64, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }
 
+// mapData maps raw lat/long coordinates to canvas coordinates
+func mapData(x, y []float64, g kml.Geometry) ([]float64, []float64) {
+	for i := 0; i < len(x); i++ {
+		x[i] = vmap(x[i], g.Longmin, g.Longmax, g.Xmin, g.Xmax)
+		y[i] = vmap(y[i], g.Latmin, g.Latmax, g.Ymin, g.Ymax)
+	}
+	return x, y
+}
+
 // readData reads lat/long pairs (separated by white space) from a file, mapping to deck coordinates
-func readData(r io.Reader, g kml.Geometry) ([]float64, []float64, error) {
+func readData(r io.Reader) ([]float64, []float64, error) {
 	x := []float64{}
 	y := []float64{}
 	s := bufio.NewScanner(r)
@@ -36,58 +52,41 @@ func readData(r io.Reader, g kml.Geometry) ([]float64, []float64, error) {
 		if err != nil {
 			continue
 		}
-		x = append(x, vmap(xp, g.Longmin, g.Longmax, g.Xmin, g.Xmax))
-		y = append(y, vmap(yp, g.Latmin, g.Latmax, g.Ymin, g.Ymax))
+		x = append(x, xp)
+		y = append(y, yp)
 	}
 	return x, y, s.Err()
 }
 
-// readStats reads lat/long pairs, report on the computed bounding box and center
-func readStats(r io.Reader) {
-	maxxval := -100000000.0
-	minxval := 100000000.0
-	maxyval := -100000000.0
-	minyval := 100000000.0
+// bboxData returns minima and maxima from data
+func bboxData(x, y []float64) (float64, float64, float64, float64) {
+	maxx := -180.0
+	minx := 180.0
+	maxy := -90.0
+	miny := 90.0
 
-	s := bufio.NewScanner(r)
-	for s.Scan() {
-		t := s.Text()
-		f := strings.Fields(t)
-		if len(f) != 2 {
-			continue
+	for i := 0; i < len(x); i++ {
+		xp, yp := x[i], y[i]
+		if xp > maxx {
+			maxx = xp
 		}
-		xp, err := strconv.ParseFloat(f[1], 64) // latitude
-		if err != nil {
-			continue
+		if xp < minx {
+			minx = xp
 		}
-		yp, err := strconv.ParseFloat(f[0], 64) // longitude
-		if err != nil {
-			continue
+		if yp > maxy {
+			maxy = yp
 		}
-		if xp > maxxval {
-			maxxval = xp
-		}
-		if xp < minxval {
-			minxval = xp
-		}
-
-		if yp > maxyval {
-			maxyval = yp
-		}
-		if yp < minyval {
-			minyval = yp
+		if yp < miny {
+			miny = yp
 		}
 	}
-	centerLong := minxval + (maxxval-minxval)/2
-	centerLat := minyval + (maxyval-minyval)/2
-	fmt.Fprintf(os.Stdout, "--center=%v,%v -bbox=\"%v,%v|%v,%v\" --longmin=%v --longmax=%v --latmin=%v --latmax=%v\n",
-		centerLat, centerLong, maxyval, minxval, minyval, maxxval, minxval, maxxval, minyval, maxyval)
+	return minx, maxx, miny, maxy
 }
 
-// process processing input and options, making markup
-func process(filename string, info bool, shape, style, color, bbox string, linewidth float64, mapgeo kml.Geometry) {
+// process input and options, making markup
+func process(filename string, c config, mapgeo kml.Geometry) {
 
-	// read from stdin by default, open a file if specified
+	// read from stdin by default, if specified, open a file
 	r := os.Stdin
 	if len(filename) > 0 {
 		var rerr error
@@ -97,35 +96,42 @@ func process(filename string, info bool, shape, style, color, bbox string, linew
 			return
 		}
 	}
-
-	// just show info, then return, if specified
-	if info {
-		readStats(r)
-		return
-	}
-
 	// read coordinates
-	x, y, err := readData(r, mapgeo)
+	x, y, err := readData(r)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
-	// make a bounding box, if specified
-	if len(bbox) > 0 {
-		kml.BoundingBox(mapgeo, bbox, style)
+	defer r.Close()
+
+	// if specified, only show bbox info
+	if c.info {
+		minx, maxx, miny, maxy := bboxData(x, y)
+		centerLon := minx + (maxx-minx)/2
+		centerLat := miny + (maxy-miny)/2
+		fmt.Fprintf(os.Stdout, "--center=%v,%v -bbox=\"%v,%v|%v,%v\" --longmin=%v --longmax=%v --latmin=%v --latmax=%v\n",
+			centerLat, centerLon, maxy, minx, miny, maxx, minx, maxx, miny, maxy)
+		return
 	}
-	// make the drawing
-	kml.Deckshape(shape, style, x, y, linewidth, color, mapgeo)
-	r.Close()
+	// if specified adjust mapping to source data bounding box
+	if c.autobbox {
+		mapgeo.Longmin, mapgeo.Longmax, mapgeo.Latmin, mapgeo.Latmax = bboxData(x, y)
+	}
+	// draw a bounding box, if specified
+	if len(c.bbox) > 0 {
+		kml.BoundingBox(mapgeo, c.bbox, c.style)
+	}
+	// map to deck canvas, make the drawing
+	x, y = mapData(x, y, mapgeo)
+	kml.Deckshape(c.shape, c.style, x, y, c.linewidth, c.color, mapgeo)
+
 }
 
 func main() {
 	var mapgeo kml.Geometry
-	var fulldeck, info bool
-	var linewidth float64
-	var color, bbox, shape, bgcolor, style string
+	var cfg config
 
-	// options
+	// coordinate mapping options
 	flag.Float64Var(&mapgeo.Xmin, "xmin", 5, "canvas x minimum")
 	flag.Float64Var(&mapgeo.Xmax, "xmax", 95, "canvas x maxmum")
 	flag.Float64Var(&mapgeo.Ymin, "ymin", 5, "canvas y minimum")
@@ -134,34 +140,37 @@ func main() {
 	flag.Float64Var(&mapgeo.Latmax, "latmax", 90, "latitude x maxmum")
 	flag.Float64Var(&mapgeo.Longmin, "longmin", -180, "longitude y minimum")
 	flag.Float64Var(&mapgeo.Longmax, "longmax", 180, "longitude y maximum")
-	flag.Float64Var(&linewidth, "linewidth", 0.1, "line width")
-	flag.StringVar(&color, "color", "black", "line color")
-	flag.StringVar(&bbox, "bbox", "", "bounding box color (\"\" no box)")
-	flag.StringVar(&shape, "shape", "polyline", "polygon, polyline")
-	flag.StringVar(&style, "style", "deck", "deck, decksh, plain")
-	flag.StringVar(&bgcolor, "bgcolor", "", "background color")
-	flag.BoolVar(&fulldeck, "fulldeck", true, "make a full deck")
-	flag.BoolVar(&info, "info", false, "only report center and bounding box info")
+	// config options
+	flag.BoolVar(&cfg.info, "info", false, "only report center and bounding box info")
+	flag.BoolVar(&cfg.autobbox, "autobbox", true, "autoscale according to input values")
+	flag.Float64Var(&cfg.linewidth, "linewidth", 0.1, "line width")
+	flag.StringVar(&cfg.color, "color", "black", "line color")
+	flag.StringVar(&cfg.bbox, "bbox", "", "bounding box color (\"\" no box)")
+	flag.StringVar(&cfg.shape, "shape", "polyline", "polygon, polyline")
+	flag.StringVar(&cfg.style, "style", "deck", "deck, decksh, plain")
+	flag.StringVar(&cfg.bgcolor, "bgcolor", "", "background color")
+	flag.BoolVar(&cfg.fulldeck, "fulldeck", true, "make a full deck")
+
 	flag.Parse()
 
 	// don't do any generation if info only
-	if info {
-		fulldeck = false
+	if cfg.info {
+		cfg.fulldeck = false
 	}
 	// add deck/slide markup, if specified
-	if fulldeck {
-		kml.Deckshbegin(bgcolor)
+	if cfg.fulldeck {
+		kml.Deckshbegin(cfg.bgcolor)
 	}
 	// for every file (or stdin if no files are specified), make markup
 	if len(flag.Args()) == 0 {
-		process("", info, shape, style, color, bbox, linewidth, mapgeo)
+		process("", cfg, mapgeo)
 	} else {
 		for _, filename := range flag.Args() {
-			process(filename, info, shape, style, color, bbox, linewidth, mapgeo)
+			process(filename, cfg, mapgeo)
 		}
 	}
 	// end the deck, if specified
-	if fulldeck {
+	if cfg.fulldeck {
 		kml.Deckshend()
 	}
 }
