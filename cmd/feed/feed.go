@@ -133,7 +133,7 @@ func genhtml(w io.Writer, f Feed) {
 		fmt.Fprintf(w, htmltitle, e.Title)
 		fmt.Fprintf(w, htmlquote, e.Quote)
 		for _, l := range e.Link {
-			fmt.Fprintf(w, htmllink, l, l)
+			fmt.Fprintf(w, htmllink, xmltranslate(l), xmltranslate(l))
 		}
 	}
 	fmt.Fprintln(w, htmlend)
@@ -175,7 +175,7 @@ func gendeck(d *generate.Deck, f Feed) {
 		// subsequent links are smaller
 		for il, l := range e.Link {
 			if il == 0 {
-				d.TextLink(x, y, xmltranslate(e.Title), l, "sans", fs, ecolor)
+				d.TextLink(x, y, xmltranslate(e.Title), xmltranslate(l), "sans", fs, ecolor)
 			} else {
 				y -= fs
 				d.TextLink(x, y, "See also:"+xmltranslate(l), l, "sans", fs/2, "rgb(127,0,0)")
