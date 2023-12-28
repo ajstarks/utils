@@ -22,6 +22,7 @@
 * gurl - get URL
 * hsv2rgb - convert hsv to rgb colors
 * imgcat - make a image catalog with deck markup
+* imgps - show an image's GPS coordinates
 * ims - show image size (width and height)
 * jsonfeed - parse and list JSON feeds
 * mdtopdf - markdown to PDF
