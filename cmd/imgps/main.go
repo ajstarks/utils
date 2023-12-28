@@ -55,6 +55,7 @@ func ddLatLon(g *exif.GpsInfo) (float64, float64) {
 }
 
 func main() {
+	// for every filename, get gps info
 	for _, f := range os.Args[1:] {
 		err := process(f)
 		if err != nil {
