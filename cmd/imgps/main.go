@@ -55,7 +55,7 @@ func ddLatLon(g *exif.GpsInfo) (float64, float64) {
 }
 
 func main() {
-	for _, f := range os.Args {
+	for _, f := range os.Args[1:] {
 		err := process(f)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s: %v\n", f, err)
