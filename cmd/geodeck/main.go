@@ -109,7 +109,7 @@ func process(filename string, dest io.Writer, c config, mapgeo kml.Geometry) {
 		minx, maxx, miny, maxy := bboxData(x, y)
 		centerLon := minx + (maxx-minx)/2
 		centerLat := miny + (maxy-miny)/2
-		fmt.Fprintf(os.Stdout, "--center=%v,%v -bbox=\"%v,%v|%v,%v\" --longmin=%v --longmax=%v --latmin=%v --latmax=%v\n",
+		fmt.Fprintf(os.Stdout, "--center=%v,%v --bbox=\"%v,%v|%v,%v\" --longmin=%v --longmax=%v --latmin=%v --latmax=%v\n",
 			centerLat, centerLon, maxy, minx, miny, maxx, minx, maxx, miny, maxy)
 		return
 	}
