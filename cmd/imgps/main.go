@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/rwcarlsen/goexif/exif"
@@ -25,7 +26,11 @@ func process(filename string) error {
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	x, err := exif.Decode(f)
+	if err == io.EOF {
+		return fmt.Errorf("no exif data")
+	}
 	if err != nil {
 		return err
 	}
@@ -34,6 +39,6 @@ func process(filename string) error {
 		return err
 	}
 	fmt.Printf("%s %.8f %.8f\n", filename, lat, long)
-	f.Close()
+
 	return nil
 }
