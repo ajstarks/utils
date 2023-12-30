@@ -8,6 +8,7 @@ import (
 	"github.com/rwcarlsen/goexif/exif"
 )
 
+// for every file on the command line, report GPS coordinates
 func main() {
 	for _, f := range os.Args[1:] {
 		err := process(f)
@@ -18,6 +19,7 @@ func main() {
 	}
 }
 
+// process retrieves GPS coordinates from a file
 func process(filename string) error {
 	f, err := os.Open(filename)
 	if err != nil {
@@ -32,5 +34,6 @@ func process(filename string) error {
 		return err
 	}
 	fmt.Printf("%s %.8f %.8f\n", filename, lat, long)
+	f.Close()
 	return nil
 }
