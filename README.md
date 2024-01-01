@@ -5,9 +5,9 @@
 * c19chart - covid-19 charts
 * cc - concentric circles
 * csvread - parse and display CSV files
-
 * csv2poly - makes x,y pairs in CSV files into polygons
 * ctime - show the execution time of a command
+* desordres - visuals inspired by Vera Moldar's Des Ordres
 * deckle - make a deckled edge using deck markup
 * dicechart - make Work-style dice charts
 * dict - lookup words via dictionary servers
