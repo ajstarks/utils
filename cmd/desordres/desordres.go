@@ -19,10 +19,12 @@ func vmap(value, low1, high1, low2, high2 float64) float64 {
 	return low2 + (high2-low2)*(value-low1)/(high1-low1)
 }
 
-// csquare makes concentric squares
-func csquare(x, y, size, lw, h1, h2 float64, color string) {
-	lw = random(0.1, lw)
-	if h1 > -1 && h2 > -1 {
+// csquare makes a square with lines, using a specified width and color
+// if a hue range is set, the color is randomly selected in that range,
+// otherwise, the named color is used.
+func csquare(x, y, size, maxlw, h1, h2 float64, color string) {
+	lw := random(0.1, maxlw)
+	if h1 > -1 && h2 > -1 { // hue range set
 		color = fmt.Sprintf("hsv(%v,100,100)", random(h1, h2))
 	}
 	// define the corners
@@ -68,9 +70,10 @@ func desordres(x, y, minsize, maxsize, maxlw, h1, h2 float64, color string) {
 
 // parseHues parses a color string: if the string is of the form "h1:h2",
 // where h1, and h2 are numbers between 0 and 360, they are a range of hues.
+// Otherwise, set to -1 for invalid entries (use named colors instead)
 func parseHues(color string) (float64, float64) {
-	hb := strings.Split(color, ":")
 	var h1, h2 float64 = -1.0, -1.0
+	hb := strings.Split(color, ":")
 	if len(hb) == 2 {
 		var err error
 		h1, err = strconv.ParseFloat(hb[0], 64)
@@ -85,6 +88,7 @@ func parseHues(color string) (float64, float64) {
 	return h1, h2
 }
 
+// slide generation functions
 func beginDeck()              { fmt.Println("deck") }
 func endDeck()                { fmt.Println("edeck") }
 func beginSlide(color string) { fmt.Printf("slide %q\n", color) }
@@ -97,13 +101,13 @@ func main() {
 	flag.Float64Var(&tiles, "tiles", 10, "tiles/row")
 	flag.Float64Var(&maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
-	flag.StringVar(&color, "color", "darkgray", "pen color") // overides hues
+	flag.StringVar(&color, "color", "gray", "pen color")
 	flag.Parse()
 
-	size := 100 / tiles
-	top := 100 - (size / 2)
-	left := 100 - top
-	h1, h2 := parseHues(color)
+	size := 100 / tiles        // size of each tile
+	top := 100 - (size / 2)    // top of the beginning row
+	left := 100 - top          // left of the beginning row
+	h1, h2 := parseHues(color) // set hue range, or named color
 
 	beginDeck()
 	beginSlide(bgcolor)
