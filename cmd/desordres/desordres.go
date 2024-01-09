@@ -5,9 +5,39 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 )
+
+var palette = map[string][]string{
+	"kirokaze-gameboy":       {"#332c50", "#46878f", "#94e344", "#e2f3e4"},
+	"ice-cream-gb":           {"#7c3f58", "#eb6b6f", "#f9a875", "#fff6d3"},
+	"2-bit-demichrome":       {"#211e20", "#555568", "#a0a08b", "#e9efec"},
+	"mist-gb":                {"#2d1b00", "#1e606e", "#5ab9a8", "#c4f0c2"},
+	"rustic-gb":              {"#2c2137", "#764462", "#edb4a1", "#a96868"},
+	"2-bit-grayscale":        {"#000000", "#676767", "#b6b6b6", "#ffffff"},
+	"hollow":                 {"#0f0f1b", "#565a75", "#c6b7be", "#fafbf6"},
+	"ayy4":                   {"#00303b", "#ff7777", "#ffce96", "#f1f2da"},
+	"nintendo-gameboy-bgb":   {"#081820", "#346856", "#88c070", "#e0f8d0"},
+	"red-brick":              {"#eff9d6", "#ba5044", "#7a1c4b", "#1b0326"},
+	"nostalgia":              {"#d0d058", "#a0a840", "#708028", "#405010"},
+	"spacehaze":              {"#f8e3c4", "#cc3495", "#6b1fb1", "#0b0630"},
+	"moonlight-gb":           {"#0f052d", "#203671", "#36868f", "#5fc75d"},
+	"links-awakening-sgb":    {"#5a3921", "#6b8c42", "#7bc67b", "#ffffb5"},
+	"arq4":                   {"#ffffff", "#6772a9", "#3a3277", "#000000"},
+	"blk-aqu4":               {"#002b59", "#005f8c", "#00b9be", "#9ff4e5"},
+	"pokemon-sgb":            {"#181010", "#84739c", "#f7b58c", "#ffefff"},
+	"nintendo-super-gameboy": {"#331e50", "#a63725", "#d68e49", "#f7e7c6"},
+	"blu-scribbles":          {"#051833", "#0a4f66", "#0f998e", "#12cc7f"},
+	"kankei4":                {"#ffffff", "#f42e1f", "#2f256b", "#060608"},
+	"dark-mode":              {"#212121", "#454545", "#787878", "#a8a5a5"},
+	"ajstarks":               {"#aa0000", "#aaaaaa", "#000000", "#ffffff"},
+	"pen-n-paper":            {"#e4dbba", "#a4929a", "#4f3a54", "#260d1c"},
+	"autumn-decay":           {"#313638", "#574729", "#975330", "#c57938", "#ffad3b", "#ffe596"},
+	"polished-gold":          {"#000000", "#361c1b", "#754232", "#cd894a", "#e6b983", "#fff8bc", "#ffffff", "#2d2433", "#4f4254", "#b092a7"},
+	"funk-it-up":             {"#e4ffff", "#e63410", "#a23737", "#ffec40", "#81913b", "#26f675", "#4c714e", "#40ebda", "#394e4e", "#0a0a0a"},
+}
 
 // random returns a random number between a range
 func random(min, max float64) float64 {
@@ -21,9 +51,13 @@ func vmap(value, low1, high1, low2, high2 float64) float64 {
 
 // csquare makes a square with lines, using a specified width and color
 // if a hue range is set, the color is randomly selected in that range,
+// if a palette is specified, use a random color from it,
 // otherwise, the named color is used.
 func csquare(x, y, size, maxlw, h1, h2 float64, color string) {
-	lw := random(0.1, maxlw)
+
+	if c, ok := palette[color]; ok { // use a palette
+		color = c[rand.Intn(len(c)-1)]
+	}
 	if h1 > -1 && h2 > -1 { // hue range set
 		color = fmt.Sprintf("hsv(%v,100,100)", random(h1, h2))
 	}
@@ -33,6 +67,8 @@ func csquare(x, y, size, maxlw, h1, h2 float64, color string) {
 	trx, try := x+hs, y+hs
 	blx, bly := x-hs, y-hs
 	brx, bry := x+hs, y-hs
+
+	lw := random(0.1, maxlw)
 	// make the boundaries
 	hline(tlx, tly, size, lw, color)
 	hline(blx, bly, size, lw, color)
@@ -88,6 +124,20 @@ func parseHues(color string) (float64, float64) {
 	return h1, h2
 }
 
+func usage() {
+	fmt.Fprintln(os.Stderr)
+	fmt.Fprintf(os.Stderr, "Option      Default    Description\n")
+	fmt.Fprintf(os.Stderr, ".....................................................\n")
+	fmt.Fprintf(os.Stderr, "-tiles      10         number of tiles/row\n")
+	fmt.Fprintf(os.Stderr, "-maxlw      1          maximim line thickness\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white      background color\n")
+	fmt.Fprintf(os.Stderr, "-color      gray       color name, h1:h2, or palette:\n")
+	for p := range palette {
+		fmt.Fprintf(os.Stderr, "                       %s\n", p)
+	}
+	os.Exit(1)
+}
+
 // slide generation functions
 func beginDeck()              { fmt.Println("deck") }
 func endDeck()                { fmt.Println("edeck") }
@@ -97,17 +147,23 @@ func endSlide()               { fmt.Println("eslide") }
 func main() {
 	var tiles, maxlw float64
 	var bgcolor, color string
+	var showhelp bool
 
 	flag.Float64Var(&tiles, "tiles", 10, "tiles/row")
 	flag.Float64Var(&maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
-	flag.StringVar(&color, "color", "gray", "pen color")
+	flag.StringVar(&color, "color", "gray", "pen color: (named color, hue range (h1:h2), or palette name")
+	flag.BoolVar(&showhelp, "help", false, "show usage")
 	flag.Parse()
+	h1, h2 := parseHues(color) // set hue range, or named color/palette
 
-	size := 100 / tiles        // size of each tile
-	top := 100 - (size / 2)    // top of the beginning row
-	left := 100 - top          // left of the beginning row
-	h1, h2 := parseHues(color) // set hue range, or named color
+	if showhelp {
+		usage()
+	}
+
+	size := 100 / tiles     // size of each tile
+	top := 100 - (size / 2) // top of the beginning row
+	left := 100 - top       // left of the beginning row
 
 	beginDeck()
 	beginSlide(bgcolor)
