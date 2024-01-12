@@ -128,12 +128,12 @@ func usage() {
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintf(os.Stderr, "Option      Default    Description\n")
 	fmt.Fprintf(os.Stderr, ".....................................................\n")
-	fmt.Fprintf(os.Stderr, "-tiles      10         number of tiles/row\n")
-	fmt.Fprintf(os.Stderr, "-maxlw      1          maximim line thickness\n")
-	fmt.Fprintf(os.Stderr, "-bgcolor    white      background color\n")
-	fmt.Fprintf(os.Stderr, "-color      gray       color name, h1:h2, or palette:\n")
+	fmt.Fprintf(os.Stderr, "-tiles      10          number of tiles/row\n")
+	fmt.Fprintf(os.Stderr, "-maxlw      1           maximim line thickness\n")
+	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
+	fmt.Fprintf(os.Stderr, "-color      gray        color name, h1:h2, or palette:\n\n")
 	for p, k := range palette {
-		fmt.Fprintf(os.Stderr, "                       %-30s\t%v\n", p, k)
+		fmt.Fprintf(os.Stderr, "%-20s\t%v\n", p, k)
 	}
 	os.Exit(1)
 }
