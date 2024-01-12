@@ -1,4 +1,4 @@
-// desordres -- tile blocks of lines as in Vera Molnar's Des Ordres
+// desordres -- tile blocks of lines as in Vera Molnar's Des Ordres, using deck markup
 package main
 
 import (
@@ -39,6 +39,11 @@ var palette = map[string][]string{
 	"funk-it-up":             {"#e4ffff", "#e63410", "#a23737", "#ffec40", "#81913b", "#26f675", "#4c714e", "#40ebda", "#394e4e", "#0a0a0a"},
 }
 
+const (
+	linefmt   = "<line xp1=\"%v\" yp1=\"%v\" xp2=\"%v\" yp2=\"%v\" sp=\"%v\" color=%q/>\n"
+	squarefmt = "<rect xp=\"%v\" yp=\"%v\" wp=\"%v\" hr=\"100\" color=%q/>\n"
+)
+
 // random returns a random number between a range
 func random(min, max float64) float64 {
 	return vmap(rand.Float64(), 0, 1, min, max)
@@ -56,7 +61,7 @@ func vmap(value, low1, high1, low2, high2 float64) float64 {
 func csquare(x, y, size, maxlw, h1, h2 float64, color string) {
 
 	if c, ok := palette[color]; ok { // use a palette
-		color = c[rand.Intn(len(c)-1)]
+		color = c[rand.Intn(len(c))]
 	}
 	if h1 > -1 && h2 > -1 { // hue range set
 		color = fmt.Sprintf("hsv(%v,100,100)", random(h1, h2))
@@ -83,17 +88,17 @@ func csquare(x, y, size, maxlw, h1, h2 float64, color string) {
 
 // square makes a square
 func square(x, y, size float64, color string) {
-	fmt.Printf("square %v %v %v \"%s\"\n", x, y, size, color)
+	fmt.Printf(squarefmt, x, y, size, color)
 }
 
 // hline makes a horizontal line
 func hline(x, y, size, lw float64, color string) {
-	fmt.Printf("hline %v %v %v %v \"%s\"\n", x, y, size, lw, color)
+	fmt.Printf(linefmt, x, y, x+size, y, lw, color)
 }
 
 // vline makes a vertical line
 func vline(x, y, size, lw float64, color string) {
-	fmt.Printf("vline %v %v %v %v \"%s\"\n", x, y, size, lw, color)
+	fmt.Printf(linefmt, x, y, x, y+size, lw, color)
 }
 
 // desordres makes a series of concentric squares
@@ -139,10 +144,10 @@ func usage() {
 }
 
 // slide generation functions
-func beginDeck()              { fmt.Println("deck") }
-func endDeck()                { fmt.Println("edeck") }
-func beginSlide(color string) { fmt.Printf("slide %q\n", color) }
-func endSlide()               { fmt.Println("eslide") }
+func beginDeck()              { fmt.Println("<deck>") }
+func endDeck()                { fmt.Println("</deck>") }
+func beginSlide(color string) { fmt.Printf("<slide bg=%q>\n", color) }
+func endSlide()               { fmt.Println("</slide>") }
 
 func main() {
 	var tiles, maxlw float64
