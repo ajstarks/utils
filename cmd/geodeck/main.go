@@ -119,12 +119,10 @@ func process(filename string, dest io.Writer, c config, mapgeo kml.Geometry) {
 	}
 	// add slide markup, if specified
 	if c.fulldeck {
-		fmt.Fprintln(dest, "// "+filename)
-		if c.bgcolor != "" {
-			fmt.Fprintln(os.Stdout, "slide \""+c.bgcolor+"\"")
-		} else {
-			fmt.Fprintln(dest, "slide")
+		if len(filename) > 0 {
+			fmt.Fprintln(dest, "// "+filename)
 		}
+		beginslide(dest, c.bgcolor, c.style)
 	}
 	// draw a bounding box, if specified
 	if len(c.bbox) > 0 {
@@ -135,11 +133,41 @@ func process(filename string, dest io.Writer, c config, mapgeo kml.Geometry) {
 	kml.Deckshape(c.shape, c.style, x, y, c.linewidth, c.color, mapgeo)
 	// end the slide, if specified
 	if c.fulldeck {
-		fmt.Fprintln(dest, "eslide")
+		endslide(dest, c.style)
 	}
 
 }
 
+func begindeck(dest io.Writer, style string) {
+	if style == "deck" {
+		fmt.Fprintln(dest, "<deck>")
+	} else {
+		fmt.Fprintln(dest, "deck")
+	}
+}
+func enddeck(dest io.Writer, style string) {
+	if style == "deck" {
+		fmt.Fprintln(dest, "</deck>")
+	} else {
+		fmt.Fprintln(dest, "edeck")
+	}
+}
+
+func beginslide(dest io.Writer, bgcolor, style string) {
+	if style == "deck" {
+		fmt.Fprintf(dest, "<slide bg=%q>\n", bgcolor)
+	} else {
+		fmt.Fprintf(dest, "slide %q\n", bgcolor)
+	}
+}
+
+func endslide(dest io.Writer, style string) {
+	if style == "deck" {
+		fmt.Fprintln(dest, "</slide>")
+	} else {
+		fmt.Fprintln(dest, "eslide")
+	}
+}
 func main() {
 	var mapgeo kml.Geometry
 	var cfg config
@@ -161,7 +189,7 @@ func main() {
 	flag.StringVar(&cfg.bbox, "bbox", "", "bounding box color (\"\" no box)")
 	flag.StringVar(&cfg.shape, "shape", "polyline", "polygon, polyline")
 	flag.StringVar(&cfg.style, "style", "decksh", "deck, decksh, plain")
-	flag.StringVar(&cfg.bgcolor, "bgcolor", "", "background color")
+	flag.StringVar(&cfg.bgcolor, "bgcolor", "white", "background color")
 	flag.BoolVar(&cfg.fulldeck, "fulldeck", false, "make a full deck")
 
 	flag.Parse()
@@ -173,7 +201,7 @@ func main() {
 	}
 	// add deck markup, if specified
 	if cfg.fulldeck {
-		fmt.Fprintln(dest, "deck")
+		begindeck(dest, cfg.style)
 	}
 	// for every file (or stdin if no files are specified), make markup
 	if len(flag.Args()) == 0 {
@@ -184,7 +212,7 @@ func main() {
 		}
 	}
 	if cfg.fulldeck {
-		fmt.Fprintln(dest, "edeck")
+		enddeck(dest, cfg.style)
 	}
 
 }
