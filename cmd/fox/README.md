@@ -1,25 +1,28 @@
 # fox -- inspired by "Fox I" by Anni Albers (using deck markup)
 
+![hot](hot.png)
+
+```fox -color 0:40 -shadow 60 -bgcolor black```
+
 ![example](fox.png)
 
 ```fox -color ajstarks -w 20,80,2.5 -h 20,80,2.5  -shadow=30 -bgcolor linen```
 
-![ex1](f-00001.png)
+![ex1](dense-00001.png)
 
-```fox  -w 5,95,1.25 -h 5,95,1.25 -color funk-it-up  -shadow=30 -bgcolor black > f.xml; pngdeck -pagesize 1000x1000 ```
+```fox  -w 5,95,1.25 -h 5,95,1.25 -color funk-it-up  -shadow=30 -bgcolor black```
 
 ## options
 
 ```
 Option      Default     Description
-..........................................................
+..................................................................
 -help       false       show usage
--width      1000        canvas width
--height     1000        canvas height
 -w          10,95,5     percent begin,end,step for the width
 -h          10,95,5     percent begin,end,step for the height
+-showdow    40          shadow opacity (0 for no shadow shape)
 -bgcolor    white       background color
--color      gray        color name, h1:h2, or palette:
+-color      gray        color name, hue range (h1:h2), or palette:
 
 Palette Name            Colors
 ..........................................................
