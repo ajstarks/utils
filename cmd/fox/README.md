@@ -2,7 +2,11 @@
 
 ![example](fox.png)
 
-```fox  -color ajstarks -w 20,80,2.5 -h 20,80,2.5  -shadow=30 -bgcolor linen```
+```fox -color ajstarks -w 20,80,2.5 -h 20,80,2.5  -shadow=30 -bgcolor linen```
+
+![ex1](f-00001.png)
+
+```fox  -w 5,95,1.25 -h 5,95,1.25 -color funk-it-up  -shadow=30 -bgcolor black > f.xml; pngdeck -pagesize 1000x1000 ```
 
 ## options
 
