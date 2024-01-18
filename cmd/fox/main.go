@@ -100,31 +100,30 @@ func parserange(s string) (float64, float64, float64) {
 
 // triangle makes a colored triangle pointing to the specified direction ((u)p, (d)own, (l)eft, (r)ight)
 func triangle(x, y, width, height float64, color string, opacity float64, hue1, hue2 float64, direction string) {
-	var xp, yp [3]float64
+	var xp0, xp1, xp2, yp0, yp1, yp2 float64
 	w2 := width / 2
 	h2 := height / 2
 	switch direction {
 	case "u": // up
-		xp[0], xp[1], xp[2] = x, x-w2, x+w2
-		yp[0], yp[1], yp[2] = y+h2, y-h2, y-h2
+		xp0, xp1, xp2 = x, x-w2, x+w2
+		yp0, yp1, yp2 = y+h2, y-h2, y-h2
 	case "d": // down
-		xp[0], xp[1], xp[2] = x, x-w2, x+w2
-		yp[0], yp[1], yp[2] = y-h2, y+h2, y+h2
+		xp0, xp1, xp2 = x, x-w2, x+w2
+		yp0, yp1, yp2 = y-h2, y+h2, y+h2
 	case "l": // left
-		xp[0], xp[1], xp[2] = x-w2, x+w2, x+w2
-		yp[0], yp[1], yp[2] = y, y+h2, y-h2
+		xp0, xp1, xp2 = x-w2, x+w2, x+w2
+		yp0, yp1, yp2 = y, y+h2, y-h2
 	case "r": // right
-		xp[0], xp[1], xp[2] = x+w2, x-w2, x-w2
-		yp[0], yp[1], yp[2] = y, y+h2, y-h2
+		xp0, xp1, xp2 = x+w2, x-w2, x-w2
+		yp0, yp1, yp2 = y, y+h2, y-h2
 	}
-
 	if hue1 > -1 && hue2 > -1 { // use hue
 		color = fmt.Sprintf("hsv(%v,100,100)", random(hue1, hue2))
 	}
 	if c, ok := palette[color]; ok { // use a palette
 		color = c[rand.Intn(len(c))]
 	}
-	fmt.Printf("<polygon xc=\"%v %v %v\" yc=\"%v %v %v\" color=%q opacity=\"%.3f\"/>\n", xp[0], xp[1], xp[2], yp[0], yp[1], yp[2], color, opacity)
+	fmt.Printf("<polygon xc=\"%v %v %v\" yc=\"%v %v %v\" color=%q opacity=\"%.3f\"/>\n", xp0, xp1, xp2, yp0, yp1, yp2, color, opacity)
 }
 
 // usage prints usage info
