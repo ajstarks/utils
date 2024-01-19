@@ -1,4 +1,4 @@
-// fox -- in the stype of "Fox I" by Anni Albers
+// fox -- in the style of "Fox I" by Anni Albers
 package main
 
 import (
@@ -15,7 +15,9 @@ const maxbound = 95
 const minstep = 2.0
 const maxstep = 20.0
 const defaultstep = 5.0
-const shadowshift = 0.5
+const defxs = 0.5
+const defys = -0.5
+const defop = 40
 const rangefmt = "%v,%v,%v"
 
 var palette = map[string][]string{
@@ -135,7 +137,9 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
 	fmt.Fprintf(os.Stderr, "-w          "+defrange+"     percent begin,end,step for the width\n")
 	fmt.Fprintf(os.Stderr, "-h          "+defrange+"     percent begin,end,step for the height\n")
-	fmt.Fprintf(os.Stderr, "-showdow    40          shadow opacity (0 for no shadow shape)\n")
+	fmt.Fprintf(os.Stderr, "-shadow     40          shadow opacity,xoffset,ysoffset\n")
+	fmt.Fprintf(os.Stderr, "-xshift     0.5         shadow x shift\n")
+	fmt.Fprintf(os.Stderr, "-yshift     -0.5        shadow y shift\n")
 	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
 	fmt.Fprintf(os.Stderr, "-color      gray        color name, hue range (h1:h2), or palette:\n\n")
 	fmt.Fprintln(os.Stderr, "Palette Name            Colors\n..........................................................")
@@ -155,10 +159,12 @@ func main() {
 	// options
 	var showhelp bool
 	var bgcolor, color, xconfig, yconfig string
-	var shadowop float64
+	var shadowop, xshift, yshift float64
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	flag.BoolVar(&showhelp, "help", false, "show usage")
 	flag.Float64Var(&shadowop, "shadow", 40, "shadow opacity (0 for no shadow shape)")
+	flag.Float64Var(&xshift, "xshift", 0.5, "shadow x shift")
+	flag.Float64Var(&yshift, "yshift", -0.5, "shadow y shift")
 	flag.StringVar(&xconfig, "w", defrange, "horizontal config (min,max,step)")
 	flag.StringVar(&yconfig, "h", defrange, "vertical config (min,max,step)")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
@@ -167,9 +173,9 @@ func main() {
 	if showhelp {
 		usage()
 	}
+	h1, h2 := parseHues(color)
 	bx, ex, xstep := parserange(xconfig)
 	by, ey, ystep := parserange(yconfig)
-	h1, h2 := parseHues(color)
 	directions := []string{"u", "d", "l", "r"}
 	nd := len(directions)
 
@@ -182,7 +188,7 @@ func main() {
 			h := random(minstep, ystep)
 			triangle(x, y, w, h, color, 100, h1, h2, directions[rand.Intn(nd)])
 			if shadowop > 0 {
-				triangle(x+shadowshift, y-shadowshift, w, h, color, shadowop, h1, h2, directions[rand.Intn(nd)])
+				triangle(x+xshift, y+yshift, w, h, color, shadowop, h1, h2, directions[rand.Intn(nd)])
 			}
 		}
 	}

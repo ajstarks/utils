@@ -6,11 +6,11 @@
 
 ![example](fox.png)
 
-```fox -color ajstarks -w 20,80,2.5 -h 20,80,2.5  -shadow=30 -bgcolor linen```
+```fox -color ajstarks -w 20,80,2.5 -h 20,80,2.5  -shadow 30 -bgcolor linen```
 
 ![ex1](dense-00001.png)
 
-```fox  -w 5,95,1.25 -h 5,95,1.25 -color funk-it-up  -shadow=30 -bgcolor black```
+```fox  -w 5,95,1.25 -h 5,95,1.25 -color funk-it-up  -shadow 30 -bgcolor black```
 
 ## options
 
@@ -20,7 +20,9 @@ Option      Default     Description
 -help       false       show usage
 -w          10,95,5     percent begin,end,step for the width
 -h          10,95,5     percent begin,end,step for the height
--showdow    40          shadow opacity (0 for no shadow shape)
+-shadow     40          shadow opacity (0 for no shadow)
+-xshift     0.5         shadow x shift
+-yshift     -0.5        shadow yshift
 -bgcolor    white       background color
 -color      gray        color name, hue range (h1:h2), or palette:
 
