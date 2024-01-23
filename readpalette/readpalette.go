@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"image/color"
 	"io"
+	"os"
+	"strconv"
 	"strings"
 )
 
@@ -19,8 +21,8 @@ func rgb(x uint32) (uint8, uint8, uint8) {
 }
 
 func ReadString(r io.Reader) (spalette, error) {
-	var p spalette
 	scanner := bufio.NewScanner(r)
+	p := make(spalette)
 	for scanner.Scan() {
 		args := strings.Fields(scanner.Text())
 		l := len(args)
@@ -28,27 +30,34 @@ func ReadString(r io.Reader) (spalette, error) {
 			continue
 		}
 		name := args[0]
-		value := make([]string, l-1)
-		copy(value, args[1:])
-		p[name] = value
+		p[name] = args[1:]
 	}
 	return p, scanner.Err()
 }
 
 func ReadRGB(r io.Reader) (rgbpalette, error) {
+
 	palette, err := ReadString(r)
 	if err != nil {
 		return nil, err
 	}
 
-	var rp rgbpalette
-	var x uint32
+	rp := make(rgbpalette)
 	for name, value := range palette {
 		colors := make([]color.NRGBA, len(value))
-		for i, c := range value {
-			fmt.Sscanf(c[1:], "%x", &x)
-			r, g, b := rgb(x)
+		i := 0
+		for _, c := range value {
+			if len(c) != 7 {
+				continue // must be #nnnnnn
+			}
+			x, err := strconv.ParseUint(c[1:], 16, 32)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				continue
+			}
+			r, g, b := rgb(uint32(x))
 			colors[i] = color.NRGBA{R: r, G: g, B: b, A: 0xff}
+			i++
 		}
 		rp[name] = colors
 	}
