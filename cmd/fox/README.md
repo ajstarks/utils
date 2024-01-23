@@ -53,13 +53,9 @@ kankei4             	[#ffffff #f42e1f #2f256b #060608]
 pokemon-sgb         	[#181010 #84739c #f7b58c #ffefff]
 pen-n-paper         	[#e4dbba #a4929a #4f3a54 #260d1c]
 mist-gb             	[#2d1b00 #1e606e #5ab9a8 #c4f0c2]
-ajstarks            	[#aa0000 #aaaaaa #000000 #ffffff]
 moonlight-gb        	[#0f052d #203671 #36868f #5fc75d]
 2-bit-demichrome    	[#211e20 #555568 #a0a08b #e9efec]
 ayy4                	[#00303b #ff7777 #ffce96 #f1f2da]
-autumn-decay        	[#313638 #574729 #975330 #c57938 #ffad3b #ffe596]
-funk-it-up          	[#e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a]
-polished-gold       	[#000000 #361c1b #754232 #cd894a #e6b983 #fff8bc #ffffff #2d2433 #4f4254 #b092a7]
 ```
 ## palette files
 
@@ -72,11 +68,11 @@ name color1 color2 ... colorn
 
 for example:
 ```
-ajstarks               #aa0000 #aaaaaa #000000 #ffffff
-rainbow                red orange yellow green blue indigo violet
-pen-n-paper            #e4dbba #a4929a #4f3a54 #260d1c
-autumn-decay           #313638 #574729 #975330 #c57938 #ffad3b #ffe596
+ajstarks               #aa0000 #aaaaaa #000000 #ffffff 
+autumn-decay           #313638 #574729 #975330 #c57938 #ffad3b #ffe596 
+rainbow                #ff0000 #ffa500 #ffff00 #008000 #0000ff #4b0082 #ee82ee
+funk-it-up             #e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a 
 polished-gold          #000000 #361c1b #754232 #cd894a #e6b983 #fff8bc #ffffff #2d2433 #4f4254 #b092a7
-funk-it-up             #e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a
+funk-it-up             #e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a 
 grayscale              #111111 #222222 #333333 #444444 #555555 #666666 #777777 #888888 #999999 #aaaaaa #bbbbbb #cccccc #dddddd #eeeeee
 ```
