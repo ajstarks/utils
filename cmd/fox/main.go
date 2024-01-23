@@ -128,6 +128,20 @@ func triangle(x, y, width, height float64, color string, opacity float64, hue1, 
 	fmt.Printf("<polygon xc=\"%v %v %v\" yc=\"%v %v %v\" color=%q opacity=\"%.3f\"/>\n", xp0, xp1, xp2, yp0, yp1, yp2, color, opacity)
 }
 
+func loadpalette(pfile string) error {
+	if len(pfile) > 0 {
+		r, err := os.Open(pfile)
+		if err != nil {
+			return err
+		}
+		palette, err = ReadString(r)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // usage prints usage info
 func usage() {
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
@@ -141,6 +155,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "-xshift     0.5         shadow x shift\n")
 	fmt.Fprintf(os.Stderr, "-yshift     -0.5        shadow y shift\n")
 	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
+	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
 	fmt.Fprintf(os.Stderr, "-color      gray        color name, hue range (h1:h2), or palette:\n\n")
 	fmt.Fprintln(os.Stderr, "Palette Name            Colors\n..........................................................")
 	for p, k := range palette {
@@ -158,7 +173,7 @@ func endSlide()               { fmt.Println("</slide>") }
 func main() {
 	// options
 	var showhelp bool
-	var bgcolor, color, xconfig, yconfig string
+	var bgcolor, color, xconfig, yconfig, pfile string
 	var shadowop, xshift, yshift float64
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	flag.BoolVar(&showhelp, "help", false, "show usage")
@@ -168,11 +183,20 @@ func main() {
 	flag.StringVar(&xconfig, "w", defrange, "horizontal config (min,max,step)")
 	flag.StringVar(&yconfig, "h", defrange, "vertical config (min,max,step)")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&pfile, "p", "", "palette file")
 	flag.StringVar(&color, "color", "gray", "pen color; named color, palette, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
 	flag.Parse()
+
+	err := loadpalette(pfile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+
 	if showhelp {
 		usage()
 	}
+
 	h1, h2 := parseHues(color)
 	bx, ex, xstep := parserange(xconfig)
 	by, ey, ystep := parserange(yconfig)

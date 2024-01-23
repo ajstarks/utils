@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-var palette = map[string][]string{
+var palette = spalette{
 	"kirokaze-gameboy":       {"#332c50", "#46878f", "#94e344", "#e2f3e4"},
 	"ice-cream-gb":           {"#7c3f58", "#eb6b6f", "#f9a875", "#fff6d3"},
 	"2-bit-demichrome":       {"#211e20", "#555568", "#a0a08b", "#e9efec"},
@@ -136,11 +136,26 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "-tiles      10          number of tiles/row\n")
 	fmt.Fprintf(os.Stderr, "-maxlw      1           maximim line thickness\n")
 	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
+	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
 	fmt.Fprintf(os.Stderr, "-color      gray        color name, h1:h2, or palette:\n\n")
 	for p, k := range palette {
 		fmt.Fprintf(os.Stderr, "%-20s\t%v\n", p, k)
 	}
 	os.Exit(1)
+}
+
+func loadpalette(pfile string) error {
+	if len(pfile) > 0 {
+		r, err := os.Open(pfile)
+		if err != nil {
+			return err
+		}
+		palette, err = ReadString(r)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // slide generation functions
@@ -151,16 +166,23 @@ func endSlide()               { fmt.Println("</slide>") }
 
 func main() {
 	var tiles, maxlw float64
-	var bgcolor, color string
+	var bgcolor, color, pfile string
 	var showhelp bool
 
 	flag.Float64Var(&tiles, "tiles", 10, "tiles/row")
 	flag.Float64Var(&maxlw, "maxlw", 1, "maximum line thickness")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
 	flag.StringVar(&color, "color", "gray", "pen color: (named color, hue range (h1:h2), or palette name")
+	flag.StringVar(&pfile, "p", "", "palette file")
 	flag.BoolVar(&showhelp, "help", false, "show usage")
 	flag.Parse()
 	h1, h2 := parseHues(color) // set hue range, or named color/palette
+
+	err := loadpalette(pfile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 
 	if showhelp {
 		usage()

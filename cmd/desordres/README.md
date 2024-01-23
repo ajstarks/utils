@@ -34,12 +34,23 @@ pngdeck -pagesize 500x500 mist-gb.xml
 ```
 <img src="mist-gb-00001.png" width="500" height="500"/>
 
+
+Load a custom palette:
+```
+desordres -p ajs.pal -color rainbow > rb.xml
+pngdeck -pagesize 500x500 rb.xml
+```
+
+<img src="rb-00001.png" width="500" height="500"/>
+
+
 ## options
 ```
 Option      Default            Description
 .....................................................
 -tiles      10                 number of tiles/row
 -maxlw      1                  maximim line thickness
+-p          ""                 palette file
 -bgcolor    white              background color
 -color      gray               color name, h1:h2, or palette:
 
@@ -71,4 +82,25 @@ polished-gold                  [#000000 #361c1b #754232 #cd894a #e6b983 #fff8bc 
 funk-it-up                     [#e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a]
 
 ```
+
+## palette files
+
+```desordres``` has a built-in palette which may be overridden by specifying a palette file.
+
+Custom palette files are of the form of name followed by a list of colors, one name per line.
+Colors may be named colors or rgb triples in hex form (#rrggbb).
+
+name color1 color2 ... colorn
+
+for example:
+```
+ajstarks               #aa0000 #aaaaaa #000000 #ffffff
+rainbow                red orange yellow green blue indigo violet
+pen-n-paper            #e4dbba #a4929a #4f3a54 #260d1c
+autumn-decay           #313638 #574729 #975330 #c57938 #ffad3b #ffe596
+polished-gold          #000000 #361c1b #754232 #cd894a #e6b983 #fff8bc #ffffff #2d2433 #4f4254 #b092a7
+funk-it-up             #e4ffff #e63410 #a23737 #ffec40 #81913b #26f675 #4c714e #40ebda #394e4e #0a0a0a
+grayscale              #111111 #222222 #333333 #444444 #555555 #666666 #777777 #888888 #999999 #aaaaaa #bbbbbb #cccccc #dddddd #eeeeee
+```
+
 
