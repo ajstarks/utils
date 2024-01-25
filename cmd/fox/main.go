@@ -71,7 +71,8 @@ func parserange(s string) (float64, float64, float64) {
 	return minbound, maxbound, defaultstep
 }
 
-// triangle makes a colored triangle pointing to the specified direction ((u)p, (d)own, (l)eft, (r)ight)
+// triangle makes a colored triangle pointing to the specified direction
+// ((u)p, (d)own, (l)eft, (r)ight, ne, nw, se, sw)
 func triangle(x, y, width, height float64, color string, opacity float64, hue1, hue2 float64, direction string) {
 	var xp0, xp1, xp2, yp0, yp1, yp2 float64
 	w2 := width / 2
@@ -89,6 +90,18 @@ func triangle(x, y, width, height float64, color string, opacity float64, hue1, 
 	case "r": // right
 		xp0, xp1, xp2 = x+w2, x-w2, x-w2
 		yp0, yp1, yp2 = y, y+h2, y-h2
+	case "ne": // northeast
+		xp0, xp1, xp2 = x-w2, x-w2, x+w2
+		yp0, yp1, yp2 = y-h2, y+h2, y+h2
+	case "nw": // northwest
+		xp0, xp1, xp2 = x-w2, x+w2, x-w2
+		yp0, yp1, yp2 = y-h2, y+h2, y+h2
+	case "sw": // southwest
+		xp0, xp1, xp2 = x+w2, x-w2, x-w2
+		yp0, yp1, yp2 = y-h2, y-h2, y+h2
+	case "se": // southeast
+		xp0, xp1, xp2 = x-w2, x+w2, x+w2
+		yp0, yp1, yp2 = y-h2, y-h2, y+h2
 	}
 	if hue1 > -1 && hue2 > -1 { // use hue
 		color = fmt.Sprintf("hsv(%v,100,100)", random(hue1, hue2))
@@ -164,7 +177,7 @@ func main() {
 	h1, h2 := parseHues(color)
 	bx, ex, xstep := parserange(xconfig)
 	by, ey, ystep := parserange(yconfig)
-	directions := []string{"u", "d", "l", "r"}
+	directions := []string{"u", "d", "l", "r", "ne", "nw", "sw", "se"}
 	nd := len(directions)
 
 	// generation
