@@ -78,16 +78,16 @@ func triangle(x, y, width, height float64, color string, opacity float64, hue1, 
 	w2 := width / 2
 	h2 := height / 2
 	switch direction {
-	case "u": // up
+	case "n": // up
 		xp0, xp1, xp2 = x, x-w2, x+w2
 		yp0, yp1, yp2 = y+h2, y-h2, y-h2
-	case "d": // down
+	case "s": // down
 		xp0, xp1, xp2 = x, x-w2, x+w2
 		yp0, yp1, yp2 = y-h2, y+h2, y+h2
-	case "l": // left
+	case "e": // left
 		xp0, xp1, xp2 = x-w2, x+w2, x+w2
 		yp0, yp1, yp2 = y, y+h2, y-h2
-	case "r": // right
+	case "w": // right
 		xp0, xp1, xp2 = x+w2, x-w2, x-w2
 		yp0, yp1, yp2 = y, y+h2, y-h2
 	case "ne": // northeast
@@ -116,20 +116,21 @@ func triangle(x, y, width, height float64, color string, opacity float64, hue1, 
 func usage() {
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	fmt.Fprintln(os.Stderr)
-	fmt.Fprintf(os.Stderr, "Option      Default     Description\n")
+	fmt.Fprintf(os.Stderr, "Option    Default               Description\n")
 	fmt.Fprintf(os.Stderr, "..................................................................\n")
-	fmt.Fprintf(os.Stderr, "-help       false       show usage\n")
-	fmt.Fprintf(os.Stderr, "-w          "+defrange+"     percent begin,end,step for the width\n")
-	fmt.Fprintf(os.Stderr, "-h          "+defrange+"     percent begin,end,step for the height\n")
-	fmt.Fprintf(os.Stderr, "-shadow     40          shadow opacity,xoffset,ysoffset\n")
-	fmt.Fprintf(os.Stderr, "-xshift     0.5         shadow x shift\n")
-	fmt.Fprintf(os.Stderr, "-yshift     -0.5        shadow y shift\n")
-	fmt.Fprintf(os.Stderr, "-bgcolor    white       background color\n")
-	fmt.Fprintf(os.Stderr, "-p          \"\"          palette file\n")
-	fmt.Fprintf(os.Stderr, "-color      gray        color name, hue range (h1:h2), or palette:\n\n")
-	fmt.Fprintln(os.Stderr, "Palette Name            Colors\n..........................................................")
+	fmt.Fprintf(os.Stderr, "-help     false                 show usage\n")
+	fmt.Fprintf(os.Stderr, "-w        "+defrange+"               percent begin,end,step for the width\n")
+	fmt.Fprintf(os.Stderr, "-h        "+defrange+"               percent begin,end,step for the height\n")
+	fmt.Fprintf(os.Stderr, "-shadow   40                    shadow opacity,xoffset,ysoffset\n")
+	fmt.Fprintf(os.Stderr, "-d        \"n s e w nw sw ne se\" shape directions\n")
+	fmt.Fprintf(os.Stderr, "-xshift   0.5                   shadow x shift\n")
+	fmt.Fprintf(os.Stderr, "-yshift   -0.5                  shadow y shift\n")
+	fmt.Fprintf(os.Stderr, "-bgcolo   white                 background color\n")
+	fmt.Fprintf(os.Stderr, "-p        \"\"                    palette file\n")
+	fmt.Fprintf(os.Stderr, "-color    gray                  color name, hue range (h1:h2), or palette:\n\n")
+	fmt.Fprintln(os.Stderr, "Palette Name                    Colors\n..........................................................")
 	for p, k := range palette {
-		fmt.Fprintf(os.Stderr, "%-20s\t%v\n", p, k)
+		fmt.Fprintf(os.Stderr, "%-25s\t%v\n", p, k)
 	}
 	os.Exit(1)
 }
@@ -151,10 +152,15 @@ func userpalette(pfile string) {
 	}
 }
 
+func setdir(s string) []string {
+	d := strings.Fields(s)
+	return d
+}
+
 func main() {
 	// options
 	var showhelp bool
-	var bgcolor, color, xconfig, yconfig, pfile string
+	var bgcolor, color, xconfig, yconfig, pfile, dirs string
 	var shadowop, xshift, yshift float64
 	defrange := fmt.Sprintf(rangefmt, minbound, maxbound, defaultstep)
 	flag.BoolVar(&showhelp, "help", false, "show usage")
@@ -164,6 +170,7 @@ func main() {
 	flag.StringVar(&xconfig, "w", defrange, "horizontal config (min,max,step)")
 	flag.StringVar(&yconfig, "h", defrange, "vertical config (min,max,step)")
 	flag.StringVar(&bgcolor, "bgcolor", "white", "background color")
+	flag.StringVar(&dirs, "d", "n s e w sw se nw ne", "directions")
 	flag.StringVar(&pfile, "p", "", "palette file")
 	flag.StringVar(&color, "color", "gray", "pen color; named color, palette, or h1:h2 for a random hue range hsv(h1:h2, 100, 100)")
 	flag.Parse()
@@ -174,10 +181,10 @@ func main() {
 		usage()
 	}
 
+	directions := setdir(dirs)
 	h1, h2 := parseHues(color)
 	bx, ex, xstep := parserange(xconfig)
 	by, ey, ystep := parserange(yconfig)
-	directions := []string{"u", "d", "l", "r", "ne", "nw", "sw", "se"}
 	nd := len(directions)
 
 	// generation

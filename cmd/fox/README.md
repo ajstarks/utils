@@ -16,46 +16,52 @@
 
 ```fox -p ajs.pal -color rainbow```
 
+![ex3](north-00001.png)
+
+```fox -p ajs.pal -color rainbow  -d "n"```
+
 
 ## options
 
 ```
-Option      Default     Description
+Option    Default               Description
 ..................................................................
--help       false       show usage
--w          10,95,5     percent begin,end,step for the width
--h          10,95,5     percent begin,end,step for the height
--shadow     40          shadow opacity (0 for no shadow)
--xshift     0.5         shadow x shift
--yshift     -0.5        shadow yshift
--p          ""          palette file
--bgcolor    white       background color
--color      gray        color name, hue range (h1:h2), or palette:
+-help     false                 show usage
+-w        10,95,5               percent begin,end,step for the width
+-h        10,95,5               percent begin,end,step for the height
+-shadow   40                    shadow opacity,xoffset,ysoffset
+-d        "n s e w nw sw ne se" shape directions
+-xshift   0.5                   shadow x shift
+-yshift   -0.5                  shadow y shift
+-bgcolo   white                 background color
+-p        ""                    palette file
+-color    gray                  color name, hue range (h1:h2), or palette:
 
-Palette Name            Colors
+Palette Name                    Colors
 ..........................................................
-nintendo-gameboy-bgb	[#081820 #346856 #88c070 #e0f8d0]
-arq4                	[#ffffff #6772a9 #3a3277 #000000]
-blk-aqu4            	[#002b59 #005f8c #00b9be #9ff4e5]
-kirokaze-gameboy    	[#332c50 #46878f #94e344 #e2f3e4]
-rustic-gb           	[#2c2137 #764462 #edb4a1 #a96868]
-dark-mode           	[#212121 #454545 #787878 #a8a5a5]
-spacehaze           	[#f8e3c4 #cc3495 #6b1fb1 #0b0630]
-blu-scribbles       	[#051833 #0a4f66 #0f998e #12cc7f]
-nostalgia           	[#d0d058 #a0a840 #708028 #405010]
-links-awakening-sgb 	[#5a3921 #6b8c42 #7bc67b #ffffb5]
-red-brick           	[#eff9d6 #ba5044 #7a1c4b #1b0326]
-nintendo-super-gameboy	[#331e50 #a63725 #d68e49 #f7e7c6]
-ice-cream-gb        	[#7c3f58 #eb6b6f #f9a875 #fff6d3]
-hollow              	[#0f0f1b #565a75 #c6b7be #fafbf6]
-kankei4             	[#ffffff #f42e1f #2f256b #060608]
-2-bit-grayscale     	[#000000 #676767 #b6b6b6 #ffffff]
-pokemon-sgb         	[#181010 #84739c #f7b58c #ffefff]
-pen-n-paper         	[#e4dbba #a4929a #4f3a54 #260d1c]
-mist-gb             	[#2d1b00 #1e606e #5ab9a8 #c4f0c2]
-moonlight-gb        	[#0f052d #203671 #36868f #5fc75d]
-2-bit-demichrome    	[#211e20 #555568 #a0a08b #e9efec]
-ayy4                	[#00303b #ff7777 #ffce96 #f1f2da]
+kirokaze-gameboy         	[#332c50 #46878f #94e344 #e2f3e4]
+rustic-gb                	[#2c2137 #764462 #edb4a1 #a96868]
+nintendo-gameboy-bgb     	[#081820 #346856 #88c070 #e0f8d0]
+nostalgia                	[#d0d058 #a0a840 #708028 #405010]
+arq4                     	[#ffffff #6772a9 #3a3277 #000000]
+blk-aqu4                 	[#002b59 #005f8c #00b9be #9ff4e5]
+kankei4                  	[#ffffff #f42e1f #2f256b #060608]
+spacehaze                	[#f8e3c4 #cc3495 #6b1fb1 #0b0630]
+nintendo-super-gameboy   	[#331e50 #a63725 #d68e49 #f7e7c6]
+dark-mode                	[#212121 #454545 #787878 #a8a5a5]
+ice-cream-gb             	[#7c3f58 #eb6b6f #f9a875 #fff6d3]
+2-bit-demichrome         	[#211e20 #555568 #a0a08b #e9efec]
+2-bit-grayscale          	[#000000 #676767 #b6b6b6 #ffffff]
+hollow                   	[#0f0f1b #565a75 #c6b7be #fafbf6]
+links-awakening-sgb      	[#5a3921 #6b8c42 #7bc67b #ffffb5]
+blu-scribbles            	[#051833 #0a4f66 #0f998e #12cc7f]
+mist-gb                  	[#2d1b00 #1e606e #5ab9a8 #c4f0c2]
+ayy4                     	[#00303b #ff7777 #ffce96 #f1f2da]
+red-brick                	[#eff9d6 #ba5044 #7a1c4b #1b0326]
+moonlight-gb             	[#0f052d #203671 #36868f #5fc75d]
+pokemon-sgb              	[#181010 #84739c #f7b58c #ffefff]
+pen-n-paper              	[#e4dbba #a4929a #4f3a54 #260d1c]
+
 ```
 ## palette files
 
