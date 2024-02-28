@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"time"
 
 	"github.com/ajstarks/deck/generate"
 )
@@ -128,7 +127,6 @@ func main() {
 	flag.StringVar(&color, "color", "gray", "color")
 	flag.StringVar(&dtype, "type", "lh", "fv: filled vertical, fh: filled horizontal, lv: line vertical, lh: line horizontal")
 	flag.Parse()
-	rand.Seed(time.Now().UnixNano())
 
 	switch dtype {
 	case "fv":
