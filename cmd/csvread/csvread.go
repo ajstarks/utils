@@ -64,7 +64,6 @@ func main() {
 	}
 	w := csv.NewWriter(os.Stdout)
 	r.LazyQuotes = true
-	r.TrailingComma = true
 	fields := getf(flag.Args())
 
 	// loop over the input, making output
