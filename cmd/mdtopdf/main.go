@@ -4,7 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/mandolyte/mdtopdf"
@@ -29,7 +29,7 @@ func main() {
 	var err error
 
 	if input == "" {
-		content, err = ioutil.ReadAll(os.Stdin)
+		content, err = io.ReadAll(os.Stdin)
 		if err != nil {
 			die(err)
 		}
