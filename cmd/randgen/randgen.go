@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-	"time"
 )
 
 func vmap(v, l1, h1, l2, h2 float64) float64 {
@@ -20,7 +19,6 @@ func main() {
 	xint := flag.Float64("xint", 0, "x value interval")
 	flag.Parse()
 	xval := 0.0
-	rand.Seed(int64(time.Now().Nanosecond()) % 1e9)
 	f := fmt.Sprintf("%%.%df", *ndec)
 	for i := 0; i < *nrand; i++ {
 		if *xint > 0 {
