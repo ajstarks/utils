@@ -31,7 +31,7 @@ func main() {
 	}
 	// check for usage errors
 	if begin >= end || len(fontname) == 0 || la <= 1 {
-		fmt.Fprintln(os.Stderr, "Usage: utab fontname [begin] [end] [output]")
+		fmt.Fprintf(os.Stderr, "Usage: utab fontname [begin (default=%d)] [end (default=%d)] [output default=%q]\n", begin, end, outfile)
 		os.Exit(1)
 	}
 	// begin the document
