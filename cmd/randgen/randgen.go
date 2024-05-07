@@ -4,7 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 )
 
 func vmap(v, l1, h1, l2, h2 float64) float64 {
