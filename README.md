@@ -18,7 +18,6 @@
 * feed - read Friday Feed markup, generate to deck, html, RTF, plain text, JSON
 * fox - visuals in the form of "Fox I" by Anni Albers
 * fstat - show file status
-* geodeck - convert lat/long coordinates to deck/decksh markup
 * gitdate - visualize git commits over time
 * gurl - get URL
 * hsv2rgb - convert hsv to rgb colors
