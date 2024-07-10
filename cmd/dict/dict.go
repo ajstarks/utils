@@ -18,10 +18,12 @@ func main() {
 	c, err := dict.Dial("tcp", *dserver)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		return
+		os.Exit(1)
 	}
 	defer c.Close()
-	if len(flag.Args()) == 0 { // no args, list dictionaries
+
+	// no args, list dictionaries, exit
+	if len(flag.Args()) == 0 {
 		dicts, err := c.Dicts()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
