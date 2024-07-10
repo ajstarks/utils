@@ -30,16 +30,18 @@ func main() {
 		for _, dl := range dicts {
 			fmt.Println(dl.Name, dl.Desc)
 		}
-	} else { // define each word specified on the command line
-		for _, word := range flag.Args() {
-			defs, err := c.Define(*db, word)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%s: %v\n", word, err)
-				continue
-			}
-			for _, result := range defs {
-				fmt.Println(string(result.Text))
-			}
+		return
+	}
+
+	// define each word specified on the command line
+	for _, word := range flag.Args() {
+		defs, err := c.Define(*db, word)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s: %v\n", word, err)
+			continue
+		}
+		for _, result := range defs {
+			fmt.Println(string(result.Text))
 		}
 	}
 }
