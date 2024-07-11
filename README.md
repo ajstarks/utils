@@ -1,6 +1,6 @@
 # Useful commands
 
-* between - print the number of hours between two dates
+* between - print the time (hours, minutes, seconds, milliseconds) between two dates
 * bezpoints - compute the points along a bezier curve
 * c19chart - covid-19 charts
 * cc - concentric circles
