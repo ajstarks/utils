@@ -1,22 +1,20 @@
-// between: compute the hours between two dates
+// between: compute the time (hours, minutes, or seconds) between two dates
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"time"
 )
 
-const isofmt = "2006-01-02"
-const usage = "specify start time and end time in the YYYY-MM-DD format; for example:\n\nbetween 1970-01-01 2009-10-11"
-
 func main() {
-	if len(os.Args) < 3 {
-		fmt.Fprintln(os.Stderr, usage)
-		os.Exit(1)
-	}
-	begintime := os.Args[1]
-	endtime := os.Args[2]
+	const isofmt = "2006-01-02"
+	var begintime, endtime, unit string
+	flag.StringVar(&begintime, "begin", "2006-01-02", "begin time")
+	flag.StringVar(&endtime, "end", "2009-11-10", "end time")
+	flag.StringVar(&unit, "unit", "hour", "time unit (month, hour, minute, second)")
+	flag.Parse()
 
 	t0, err := time.Parse(isofmt, begintime)
 	if err != nil {
@@ -28,6 +26,15 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%s is not a valid time\n", endtime)
 		os.Exit(3)
 	}
-	between := t1.Sub(t0).Hours()
-	fmt.Printf("%s %s %g\n", begintime, endtime, between)
+	var between float64
+	switch unit {
+	case "hr", "hour", "h":
+		between = t1.Sub(t0).Hours()
+	case "min", "minute", "m":
+		between = t1.Sub(t0).Minutes()
+	case "sec", "second", "s":
+		between = t1.Sub(t0).Seconds()
+	}
+
+	fmt.Printf("%s %s %.2f %s\n", begintime, endtime, between, unit)
 }
