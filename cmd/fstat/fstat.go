@@ -1,3 +1,4 @@
+// fstat -- file status
 package main
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os"
 )
 
+// status gets file status
 func status(filename string) (os.FileInfo, bool, error) {
 	f, err := os.Stat(filename)
 	if err != nil {
@@ -13,6 +15,7 @@ func status(filename string) (os.FileInfo, bool, error) {
 	return f, f.IsDir(), err
 }
 
+// dirstat shows directory infomation
 func dirstat(name string) {
 	f, err := os.Open(name)
 	if err != nil {
@@ -29,6 +32,7 @@ func dirstat(name string) {
 	}
 }
 
+// printstat shows file status
 func printstat(f os.FileInfo) {
 	fmt.Printf(
 		"%s\t%s\t%10d\t%s\n",
@@ -39,23 +43,25 @@ func printstat(f os.FileInfo) {
 }
 
 func main() {
+	// if no args, show the current directory
 	if len(os.Args) <= 1 {
 		dirstat(".")
-	} else {
-		for i, filename := range os.Args[1:] {
-			s, isdir, err := status(filename)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
-				continue
+		return
+	}
+	// for every argument, print directory or file info
+	for i, filename := range os.Args[1:] {
+		s, isdir, err := status(filename)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			continue
+		}
+		if isdir {
+			if i > 0 {
+				fmt.Printf("%s:\n", filename)
 			}
-			if isdir {
-				if i > 0 {
-					fmt.Printf("%s:\n", filename)
-				}
-				dirstat(filename)
-			} else {
-				printstat(s)
-			}
+			dirstat(filename)
+		} else {
+			printstat(s)
 		}
 	}
 }
