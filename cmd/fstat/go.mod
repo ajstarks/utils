@@ -1,3 +1,3 @@
-module github.com/ajstarks/fstat
+module github.com/ajstarks/utils/cmd/fstat
 
-go 1.16
+go 1.19
