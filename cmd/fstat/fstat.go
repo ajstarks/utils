@@ -35,7 +35,7 @@ func dirstat(name string) {
 // printstat shows file status
 func printstat(f os.FileInfo) {
 	fmt.Printf(
-		"%10s   %20s %15d\t%s\n",
+		"%-15s %20s %15d\t%s\n",
 		f.Mode(),
 		f.ModTime().Format("2006-01-02 15:04:05"),
 		f.Size(),
