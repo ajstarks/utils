@@ -28,7 +28,9 @@ func dirstat(name string) {
 		return
 	}
 	for _, n := range fi {
-		printstat(n)
+		if n.Name()[0] != '.' {
+			printstat(n)
+		}
 	}
 }
 
