@@ -22,26 +22,31 @@ func dirstat(name string) {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
-	fi, err := f.Readdir(-1)
+	di, err := f.ReadDir(0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		return
 	}
-	for _, n := range fi {
-		if n.Name()[0] != '.' {
-			printstat(n)
+	for _, d := range di {
+		fi, err := d.Info()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			continue
 		}
+		printstat(fi)
 	}
 }
 
 // printstat shows file status
 func printstat(f os.FileInfo) {
-	fmt.Printf(
-		"%-15s %20s %15d\t%s\n",
-		f.Mode(),
-		f.ModTime().Format("2006-01-02 15:04:05"),
-		f.Size(),
-		f.Name())
+	if f.Name()[0] != '.' {
+		fmt.Printf(
+			"%-15s %20s %15d\t%s\n",
+			f.Mode(),
+			f.ModTime().Format("2006-01-02 15:04:05"),
+			f.Size(),
+			f.Name())
+	}
 }
 
 func main() {
