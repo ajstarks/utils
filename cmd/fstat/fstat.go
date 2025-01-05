@@ -14,8 +14,15 @@ const (
 	timefmt = "2006-01-02 15:04:05"
 )
 
+// flags for sorting and printing
 type dirflags struct {
-	na, sa, nd, sd, older, newer, showdot bool
+	na      bool // name ascending
+	sa      bool // size ascending
+	nd      bool // name descending
+	sd      bool // size descending
+	older   bool // date oldest first
+	newer   bool // date newest first
+	showdot bool // show dotfiles
 }
 
 // status gets file status
@@ -34,6 +41,13 @@ func nameSortAsc(files []fs.DirEntry) {
 	})
 }
 
+// nameSort sorts directory entries by name (ascending)
+func nameSortDec(files []fs.DirEntry) {
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].Name() > files[j].Name()
+	})
+}
+
 // sizeSort sort directory entries by file sizes (ascendiing)
 func sizeSortAsc(files []fs.DirEntry) {
 	sort.Slice(files, func(i, j int) bool {
@@ -45,13 +59,6 @@ func sizeSortAsc(files []fs.DirEntry) {
 		ni := fi.Size()
 		nj := fj.Size()
 		return ni < nj
-	})
-}
-
-// nameSort sorts directory entries by name (ascending)
-func nameSortDec(files []fs.DirEntry) {
-	sort.Slice(files, func(i, j int) bool {
-		return files[i].Name() > files[j].Name()
 	})
 }
 
@@ -110,7 +117,6 @@ func dirstat(dirname string, sf dirflags) {
 		return
 	}
 	// set the sort option
-
 	if sf.na {
 		nameSortAsc(di)
 	}
@@ -161,25 +167,28 @@ func main() {
 	flag.Parse()
 	args := flag.Args()
 
-	if df.na && df.nd {
-		fmt.Fprintln(os.Stderr, "pick one: name ascending or descending")
-		os.Exit(1)
+	// if other options are set turn off the default
+	if df.nd || df.sa || df.sd || df.older || df.newer {
+		df.na = false
 	}
+	// if the default is set turn off other options
+	if df.na {
+		df.nd, df.sa, df.sd, df.older, df.newer = false, false, false, false, false
+	}
+	// make size and time sorting option are exclusive; either ascending OR descending
 	if df.sa && df.sd {
-		fmt.Fprintln(os.Stderr, "pick one: size ascending or descinding")
+		fmt.Fprintln(os.Stderr, "pick one: size ascending or descending")
 		os.Exit(1)
 	}
 	if df.older && df.newer {
 		fmt.Fprintln(os.Stderr, "pick one: old or new")
 		os.Exit(1)
 	}
-
 	// if no args, show the current directory
 	if len(args) == 0 {
 		dirstat(".", df)
 		return
 	}
-
 	// for every argument, print directory or file info
 	for i, filename := range args {
 		s, isdir, err := status(filename)
