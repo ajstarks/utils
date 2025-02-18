@@ -34,21 +34,21 @@ func status(filename string) (os.FileInfo, bool, error) {
 	return f, f.IsDir(), err
 }
 
-// nameSort sorts directory entries by name (ascending)
+// nameSortAsc sorts directory entries by name (ascending)
 func nameSortAsc(files []fs.DirEntry) {
 	sort.Slice(files, func(i, j int) bool {
 		return files[i].Name() < files[j].Name()
 	})
 }
 
-// nameSort sorts directory entries by name (ascending)
+// nameSortDec sorts directory entries by name (ascending)
 func nameSortDec(files []fs.DirEntry) {
 	sort.Slice(files, func(i, j int) bool {
 		return files[i].Name() > files[j].Name()
 	})
 }
 
-// sizeSort sort directory entries by file sizes (ascendiing)
+// sizeSortAsc sort directory entries by file sizes (ascendiing)
 func sizeSortAsc(files []fs.DirEntry) {
 	sort.Slice(files, func(i, j int) bool {
 		fi, erri := files[i].Info()
@@ -62,7 +62,7 @@ func sizeSortAsc(files []fs.DirEntry) {
 	})
 }
 
-// sizeSort sort directory entries by file sizes (ascendiing)
+// sizeSortDec sort directory entries by file sizes (ascendiing)
 func sizeSortDec(files []fs.DirEntry) {
 	sort.Slice(files, func(i, j int) bool {
 		fi, erri := files[i].Info()
