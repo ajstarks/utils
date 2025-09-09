@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"unicode/utf8"
 )
 
 // column returns a number corresponding to the letter, or just the number
@@ -54,11 +55,13 @@ func output(s []string, w *csv.Writer, plain bool) {
 func main() {
 	var plainout = flag.Bool("plain", true, "plain output")
 	var headskip = flag.Bool("headskip", false, "skip the first record (header)")
+	var delim = flag.String("delim", ",", "delimiter")
 	var varfields = flag.Bool("varfields", true, "variable fields")
 	var err error
 	var data []string
 	flag.Parse()
 	r := csv.NewReader(os.Stdin)
+	r.Comma, _ = utf8.DecodeRuneInString(*delim)
 	if *varfields {
 		r.FieldsPerRecord = -1
 	}

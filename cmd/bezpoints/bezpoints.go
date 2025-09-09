@@ -12,7 +12,7 @@ type point struct {
 
 // bezpoints computes the coordinates of a quadratic bezier curve
 // source: https://en.wikipedia.org/wiki/B%C3%A9zier_curve
-// for t between 0 and 1, where p0 is the start, p1 is conttol, p2 is end
+// for t between 0 and 1, where p0 is the start, p1 is control, p2 is end
 // p_x = (1-t)^2*p0_x + 2(1-t)*t*p1_x + t^2*p2_x
 // p_y = (1-t)^2*p0_y + 2(1-t)*t*p1_y + t^2*p2_y
 func bezpoints(start, end, control point, npoints int) []point {

@@ -20,7 +20,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "usage: between -begin YYYY-MM-DD -end YYYY-MM-DD -unit (hour, minute, or second\n")
 		os.Exit(1)
 	}
-
 	t0, err := time.Parse(isofmt, begintime)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s is not a valid time\n", begintime)

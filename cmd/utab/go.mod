@@ -1,5 +1,5 @@
-module github.com/ajstarks/utab
+module github.com/ajstarks/utils/cmd/utab
 
-go 1.16
+go 1.25.1
 
-require github.com/go-pdf/fpdf v0.9.0
+require codeberg.org/go-pdf/fpdf v0.11.1

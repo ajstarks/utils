@@ -6,8 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-
-	"github.com/go-pdf/fpdf"
+	"codeberg.org/go-pdf/fpdf"
 )
 
 func main() {

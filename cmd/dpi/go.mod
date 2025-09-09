@@ -1,3 +1,3 @@
-module github.com/ajstarks/dpi
+module github.com/ajstarks/utils/cmd/dpi
 
-go 1.16
+go 1.25.1

@@ -1,3 +1,3 @@
-module github.com/ajstarks/vmap
+module github.com/ajstarks/utils/cmd/vmap
 
 go 1.16
